@@ -1,7 +1,7 @@
 // pages/index.tsx
 
 import type { ReactElement } from 'react'
-import Layout from '../ components/Layout';
+import Layout from '../components/Layout';
 //import NestedLayout from '../components/nested-layout'
 import type { NextPageWithLayout } from './_app'
 
