@@ -3,11 +3,28 @@ import Layout from '../ components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
 import { Button, Container } from '@mui/material';
+import useAxios from 'axios-hooks';
+
+type RegisterResponse = {
+    success: boolean;
+}
 
 const Register: NextPageWithLayout = () => {
-//   const [mirrored, setMirrored] = useState(false);
   const webCamRef = useRef(null);
   const [imgSrc, setImgSrc] = useState(null);
+  const [{ data, loading, error}, register] = useAxios<RegisterResponse>(
+    {
+        url: '/api/register',
+        method: 'POST',
+        data: {
+            name: 'ernesto',
+            picture: imgSrc,
+        }
+    },
+    {
+        manual: true,
+    }
+  )
 
   const capture = useCallback(() => {
     // @ts-ignore
@@ -17,6 +34,21 @@ const Register: NextPageWithLayout = () => {
 
   const retake = () => {
     setImgSrc(null);
+  }
+
+  // @ts-ignore
+//   const toDataURL = (url, callback) => {
+//     console.log(imgSrc);
+//     const reader = new FileReader();
+//     reader.onloadend = () => {
+//         callback(reader.result);
+//     }
+//     // @ts-ignore
+//     reader.readAsDataURL(imgSrc);
+//   }
+
+  const send = () => {
+    register();
   }
 
   /*
@@ -31,6 +63,11 @@ const Register: NextPageWithLayout = () => {
   return (
     <>
     <Container>
+        {error && <p>{error.message}</p>}
+        {data?.success && <p>Registro exitoso</p>}
+        {loading && "Cargando..."}
+    </Container>
+    <Container>
         {imgSrc ? ( <img src={imgSrc} alt="webcam" /> )
         : (
           <Webcam
@@ -44,9 +81,17 @@ const Register: NextPageWithLayout = () => {
     </Container>
     <Container>
         {imgSrc ? 
-        (<Button variant="contained" onClick={retake}>Tomar otra vez</Button>)
+        (<>
+        <Button variant="contained" onClick={retake}>Tomar otra vez</Button>
+        <Button variant="contained" onClick={send}>Enviar</Button>
+        </>
+        )
         :
-        (<Button variant="contained" onClick={capture}>Tomar foto</Button>)}
+        (
+          <>
+            <Button variant="contained" onClick={capture}>Tomar foto</Button>
+          </>
+        )}
     </Container>
     </>
   );
