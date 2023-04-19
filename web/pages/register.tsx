@@ -36,17 +36,6 @@ const Register: NextPageWithLayout = () => {
     setImgSrc(null);
   }
 
-  // @ts-ignore
-//   const toDataURL = (url, callback) => {
-//     console.log(imgSrc);
-//     const reader = new FileReader();
-//     reader.onloadend = () => {
-//         callback(reader.result);
-//     }
-//     // @ts-ignore
-//     reader.readAsDataURL(imgSrc);
-//   }
-
   const send = () => {
     register();
   }
