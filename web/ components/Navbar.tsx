@@ -14,19 +14,19 @@ function Navbar() {
       >
         <Toolbar sx={{ flexWrap: 'wrap' }}>
         <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-          Congress
+          <Link href="/">Congress</Link>
         </Typography>
         <nav>
           <Link
             variant="button"
             color="text.primary"
-            href="#"
+            href="register"
             sx={{ my: 1, mx: 1.5 }}
           >
             Register
           </Link>
         </nav>
-        <Button href="#" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
+        <Button href="login" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
           Login
         </Button>
       </Toolbar>
