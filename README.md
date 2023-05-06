@@ -27,6 +27,7 @@ source bin/setenv.sh
 ```bash
 cd faces
 conda activate celso
+python3 bin/create_db.py
 flask --debug run
 ```
 
