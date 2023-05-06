@@ -4,17 +4,13 @@
 
 - Anaconda
 
-
 ## Getting Started
 
 ### Install required libraries
 
-```
+```bash
 conda create --name celso --file requirements.txt
 ```
-
-- http://localhost:3000/api/auth/signin
-
 
 ### MongoDB
 
@@ -28,9 +24,9 @@ docker run -d -p 27017:27017 mongodb/mongodb-community-server:6.0.5-ubi8
 source bin/setenv.sh
 ```
 
-```
+```bash
 cd faces
-conda install --file ../requirements.txt
+conda activate celso
 flask --debug run
 ```
 
@@ -44,15 +40,4 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-
-## sync to sdf
-
-```
-rsync -avz ~/xyz/congress \
-    --exclude=venv \
-    --exclude=node_modules \
-    --exclude=.next \
-    --exclude=.DS_Store \
-    --exclude '*.jpg' \
-    --delete ma.sdf.org:.
- ```
+Authentication http://localhost:3000/api/auth/signin
