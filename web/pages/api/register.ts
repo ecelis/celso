@@ -3,6 +3,7 @@ import axios from 'axios';
 import { HttpStatusCode } from 'axios';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import apiRoutes from '@/src/routes/routes';
 
 type Data = {
   success: boolean,
@@ -51,7 +52,7 @@ export const config = {
     }
   }
 }
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
@@ -61,14 +62,14 @@ export default function handler(
       picture.forEach(async (element) => {
         await save(element, id);
       });
-      axios.post(
-        'http://localhost:5000/register',
+      const result = await axios.post(
+        apiRoutes.REGISTER,
         {
           id: id
         }
       );
+      res.status(HttpStatusCode.Created).json(result.data);
     } else {
       res.status(HttpStatusCode.BadRequest).json({ success: false });    
     }
-    res.status(200).json({ success: true })
 }

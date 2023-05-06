@@ -1,7 +1,5 @@
 import os
 from pymongo import MongoClient
-import pyarrow
-import bson
 import pymongoarrow.monkey
 from pymongoarrow.api import Schema
 
@@ -15,11 +13,24 @@ def get_db():
     return db
 
 def get_connection():
+    """Reurn the MongoClient instance."""
     return client
 
 def close_connection(client):
+    """"Set to None the MongoClient instance."""
     client = None
 
-def save_encodings(encodings):
+def save_encodings(id, encodings):
+    """"Persist to MongoDB a list representation of the face encodings."""
     user_encodings = db.get_collection('UserEncodings')
-    user_encodings.insert_many(encodings)
+    # TODO Consider using bson instead
+    # https://stackoverflow.com/questions/12272642/serialize-deserialize-float-arrays-to-binary-file-using-bson-in-python
+    encodings_list = [encoding[0].tolist() for encoding in encodings]
+    document = {
+        'oId': id,
+        'encodings': encodings_list
+    }
+    result = user_encodings.insert_one(document)
+    return result
+
+

@@ -13,7 +13,7 @@ const Register: NextPageWithLayout = () => {
   const webCamRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [frames, setFrames] = useState([]);
-  const [username, setUsername] = useState(null);
+  const [username, setUsername] = useState('');
   const [{ data, loading, error}, register] = useAxios<RegisterResponse>(
     {
         url: '/api/register',
