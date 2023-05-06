@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import useAxios from 'axios-hooks';
+import axios from 'axios';
 import { HttpStatusCode } from 'axios';
 import * as fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
@@ -29,24 +29,44 @@ function decodeBase64Image(dataString: string) {
     return response.data;
 }
 
-async function save(data: string) {
+async function save(data: string, id: string) {
     const imageBuffer = decodeBase64Image(data);
     try {
-        const UPLOADS_DIR = '/Users/ecelis/xyz/congress/data/images/uploads/';
-        const fileName = UPLOADS_DIR + uuidv4() + '.jpg' 
+        const CELSO_SAMPLES = '/tmp/samples/' + id + '/';
+        if(!fs.existsSync(CELSO_SAMPLES)) {
+          await fs.mkdirSync(CELSO_SAMPLES)
+        }
+        const fileName = CELSO_SAMPLES + id.substring(0, 36) + '_' +  uuidv4() + '.jpg' 
         // @ts-ignore
         fs.writeFileSync(fileName, imageBuffer);
     } catch (error) {
       console.log(error);
     }
-}
+} //https://codepen.io/mozmorris/pen/yLYKzyp?editors=0011
 
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '8mb',
+    }
+  }
+}
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
     if(req.method === 'POST') {
-      save(req.body.picture);
+      const id: string =  uuidv4();
+      const {picture, username} = req.body;
+      picture.forEach(async (element) => {
+        await save(element, id);
+      });
+      axios.post(
+        'http://localhost:5000/register',
+        {
+          id: id
+        }
+      );
     } else {
       res.status(HttpStatusCode.BadRequest).json({ success: false });    
     }

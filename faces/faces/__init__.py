@@ -1,8 +1,7 @@
 import os
-from flask import Flask
+from flask import Flask, g
 from flask_cors import CORS
-
-
+from cv2 import getBuildInformation, VideoCapture
 
 db = []
 
@@ -29,6 +28,10 @@ def create_app(test_config=None):
     @app.route('/')
     def index():
         return {'Sobre el Rio, version': '0.0.1'}
+    
+    @app.route('/info')
+    def info():
+        return '<pre>' + getBuildInformation() + '</pre>'
     
     return app
 

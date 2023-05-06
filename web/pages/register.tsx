@@ -1,8 +1,8 @@
-import { ReactElement, useCallback, useRef, useState } from 'react'
-import Layout from '../components/Layout';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
+import Layout from '../src/components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
-import { Button, Container } from '@mui/material';
+import { Button, Container, TextField } from '@mui/material';
 import useAxios from 'axios-hooks';
 
 type RegisterResponse = {
@@ -11,30 +11,41 @@ type RegisterResponse = {
 
 const Register: NextPageWithLayout = () => {
   const webCamRef = useRef(null);
-  const [imgSrc, setImgSrc] = useState(null);
+  const [capturing, setCapturing] = useState(false);
+  const [frames, setFrames] = useState([]);
+  const [username, setUsername] = useState(null);
   const [{ data, loading, error}, register] = useAxios<RegisterResponse>(
     {
         url: '/api/register',
         method: 'POST',
         data: {
-            name: 'ernesto',
-            picture: imgSrc,
-        }
+          username: username,
+          picture: frames,
+        },
     },
     {
         manual: true,
+        autoCancel: false
     }
   )
 
   const capture = useCallback(() => {
-    // @ts-ignore
-    const imageSrc = webCamRef.current.getScreenshot();
-    setImgSrc(imageSrc);
-  }, [webCamRef]);
+    setCapturing(true);
+    const _frames = [];
+    for (let f = 0; f < 30; f++) {
+      // @ts-ignore
+      const imageSrc = webCamRef.current.getScreenshot();
+      _frames.push(imageSrc);
+    }
+    setFrames(_frames);
+    setCapturing(false);
+  }, [webCamRef, username]);
 
-  const retake = () => {
-    setImgSrc(null);
-  }
+  useEffect(() => {
+    if (frames.length > 29) {
+      register();
+    }
+  }, [frames, capturing]);
 
   const send = () => {
     register();
@@ -55,32 +66,24 @@ const Register: NextPageWithLayout = () => {
         {error && <p>{error.message}</p>}
         {data?.success && <p>Registro exitoso</p>}
         {loading && "Cargando..."}
+        {capturing && "Capturando..."}
     </Container>
     <Container>
-        {imgSrc ? ( <img src={imgSrc} alt="webcam" /> )
-        : (
-          <Webcam
-            height={600}
-            width={600}
-            ref={webCamRef}
-            mirrored={true}
-            screenshotFormat='image/jpeg'
-            screenshotQuality={0.8} />
-        )}
+        <TextField id="name" label="Nombre" variant="standard"
+        required={true}
+        placeholder='Juan Perez'
+        value={username}
+        onChange={(e) => {setUsername(e.target.value)}} />
+       <Webcam
+          height={600}
+          width={600}
+          ref={webCamRef}
+          mirrored={true}
+          screenshotFormat='image/jpeg'
+          screenshotQuality={0.8} />
     </Container>
     <Container>
-        {imgSrc ? 
-        (<>
-        <Button variant="contained" onClick={retake}>Tomar otra vez</Button>
-        <Button variant="contained" onClick={send}>Enviar</Button>
-        </>
-        )
-        :
-        (
-          <>
-            <Button variant="contained" onClick={capture}>Tomar foto</Button>
-          </>
-        )}
+        <Button variant="contained" onClick={capture}>Enviar</Button>
     </Container>
     </>
   );

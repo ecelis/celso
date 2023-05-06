@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useRef, useState } from 'react'
-import Layout from '../components/Layout';
+import Layout from '../src/components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
 import { Button, Container } from '@mui/material';

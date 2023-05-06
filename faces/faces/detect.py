@@ -1,46 +1,34 @@
 import os
-
+import glob
 import cv2
-import face_recognition
+from face_recognition import face_encodings, face_locations
+from faces.helpers import save_encodings
 
+samples = os.environ['CELSO_SAMPLES']
+unknown = os.environ['CELSO_UNKNOWN']
 
-known_path = os.environ['UPLOADS_DIR']
-# unknown_path = os.path.join(os.getcwd(), "Images/Unknown_faces/")
-
-
-def register(file_name):
-    img = cv2.imread(os.path.join(known_path, file_name))
-    small_img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
+def get_encodings(image):
+    small_img = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
     rgb_small_img = small_img[:, :, ::-1]
-    face_locations = face_recognition.face_locations(rgb_small_img)
-    face_encodings = face_recognition.face_encodings(rgb_small_img, face_locations)
+    locations = face_locations(rgb_small_img)
+    encodings = face_encodings(rgb_small_img, locations)
+    return encodings
 
-    # ret, frame = video_capture.read()
-    # small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-    # rgb_small_frame = small_frame[:, :, ::-1]
-    # face_locations = face_recognition.face_locations(rgb_small_frame)
-    # face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-    dir = os.path.join(known_path,name)
-    if(not os.path.isdir(dir)):
-        os.mkdir(dir)
-    os.chdir(dir) 
-    rand_no = np.random.random_sample()
-    cv2.imwrite(str(rand_no)+".jpg", frame)
-    video_capture.release()
-    cv2.destroyAllWindows()
-    encoding = ""
-    for i in face_encodings:
-        encoding += str(i)+","
-    li = [name, encoding]
+def encode(id):
+    id_path = os.path.join(samples, id)
+    images = [cv2.imread(file) for file in glob.glob(id_path + '/*.jpg')]
+    encodings = list(map(get_encodings, images))
+    save_encodings(encodings)
+    return (id, encodings)
 
-def match():
+def match(id):
     msg = ''
     video_capture = cv2.VideoCapture(0)
     ret, frame = video_capture.read()
     small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
     rgb_small_frame = small_frame[:, :, ::-1]
-    face_locations = face_recognition.face_locations(rgb_small_frame)
-    face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+    face_locations = face_locations(rgb_small_frame)
+    face_encodings = face_encodings(rgb_small_frame, face_locations)
     face_names = []
     if(face_encodings == []):
         msg = 'Faces not found'
