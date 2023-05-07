@@ -1,12 +1,17 @@
 import { ReactElement, useCallback, useRef, useState, useEffect } from 'react'
-import Layout from '../src/components/Layout';
+import Layout from '@/src/components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
 import { Button, Container } from '@mui/material';
 import useAxios from 'axios-hooks';
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import { getProviders, signIn } from "next-auth/react"
+import { getServerSession } from "next-auth/next"
+import { authOptions } from "./api/auth/[...nextauth]";
 
 type LoginResponse = {
-    success: boolean;
+  _id: string,
+  username: string;
 }
 
 const Login: NextPageWithLayout = () => {
@@ -45,6 +50,13 @@ const Login: NextPageWithLayout = () => {
     }
   }, [frame, capturing]);
 
+  useEffect(() => {
+    if(data) {
+      signIn('credentials', {redirect: false, _id: data._id, username: data.username})
+    }
+  },
+  [data])
+
   /*
   The screenshotFormat prop allows us to specify the format of the screenshot.
   The possible values for this prop are image/jpeg, image/png, and image/webp.
@@ -58,13 +70,13 @@ const Login: NextPageWithLayout = () => {
     <>
     <Container>
         {error && <p>{error.message}</p>}
-        {data?.success && <p>Login exitoso</p>}
+        {data && <p>{data?.username}</p>}
         {loading && "Cargando..."}
     </Container>
     <Container>
        <Webcam
-            height={600}
-            width={600}
+            height={240}
+            width={160}
             ref={webCamRef}
             mirrored={true}
             screenshotFormat='image/jpeg'
@@ -85,6 +97,19 @@ Login.getLayout = function getLayout(page: ReactElement) {
       {page}
     </Layout>
   )
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerSession(context.req, context.res, authOptions);
+  
+  // If the user is already logged in, redirect.
+  // Note: Make sure not to redirect to the same page
+  // To avoid an infinite loop!
+  if (session) {
+    return { redirect: { destination: "/" } };
+  }
+  
+  return { props: {} };
 }
 
 export default Login;

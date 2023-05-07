@@ -1,22 +1,27 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
-import EmailProvider from "next-auth/providers/email";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
-import clientPromise, { mongodbUri } from '../../../src/helpers/mongodb';
+import clientPromise, { mongodbUri } from '@/src/helpers/mongodb';
+import { getCsrfToken } from 'next-auth/react';
 
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
-    EmailProvider({
-        server: {
-            host: process.env.EMAIL_SERVER_HOST,
-            port: process.env.EMAIL_SREVER_PORT,
-            auth: {
-                user: process.env.EMAIL_USER_USER,
-                PASS: process.env.EMAIL_SERVER_PASSWORD,
-            }
-        }
+    CredentialsProvider({
+      name: 'FaceDetection',
+     credentials: { _id: { type: 'text'}, username: { type: 'text'}},
+      // @ts-ignore
+      async authorize(credentials, req) {
+        // Add logic to supply credentials
+        console.log(credentials);
+        const user = credentials?._id !== 'undefined' ? {
+          _id: credentials?._id, 
+          username: credentials?.username,
+          nonce: req.body?.csrfToken // await getCsrfToken({ req })
+        } : null;
+        return user;
+      }
     }),
-    // ...add more providers here
   ],
   adapter: MongoDBAdapter(clientPromise),
   // @ts-ignore
@@ -28,16 +33,22 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     secret: process.env.CONGRESS_SECRET
   },
-  pages: {},
+  pages: {
+    signIn: '/login'
+  },
   callbacks: {
     async jwt({ token }) {
         token.useRole = "admin"
         return token
-    }
+    },
+    // async session({ session, token }: { session: any; token: any }) {
+    //     session.user.username = token.sub
+    //     return session
+    //   },
   },
   events: {},
   theme: { colorScheme: 'light' },
-  debug: false,
+  debug: true,
 }
 
 export default NextAuth(authOptions)

@@ -72,8 +72,8 @@ const Register: NextPageWithLayout = () => {
         value={username}
         onChange={(e) => {setUsername(e.target.value)}} />
        <Webcam
-          height={600}
-          width={600}
+          height={240}
+          width={160}
           ref={webCamRef}
           mirrored={true}
           screenshotFormat='image/jpeg'
