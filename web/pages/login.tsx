@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useRef, useState } from 'react'
+import { ReactElement, useCallback, useRef, useState, useEffect } from 'react'
 import Layout from '../src/components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
@@ -11,29 +11,39 @@ type LoginResponse = {
 
 const Login: NextPageWithLayout = () => {
   const webCamRef = useRef(null);
-  const [imgSrc, setImgSrc] = useState(null);
-  const [{ data, loading, error}, doAuth] = useAxios<LoginResponse>(
+  const [capturing, setCapturing] = useState(false);
+  const [frame, setFrame] = useState(null);
+  const [{ data, loading, error}, login] = useAxios<LoginResponse>(
     {
         url: '/api/login',
         method: 'POST',
         data: {
-            picture: imgSrc,
-        }
+          picture: frame,
+        },
     },
     {
         manual: true,
+        autoCancel: false
     }
   )
 
   const capture = useCallback(() => {
-    // @ts-ignore
-    const imageSrc = webCamRef.current.getScreenshot();
-    setImgSrc(imageSrc);
+    setCapturing(true);
+    // const _frames = [];
+    // for (let f = 0; f < 30; f++) {
+      // @ts-ignore
+      const imageSrc = webCamRef.current.getScreenshot();
+      // _frames.push(imageSrc);
+    // }
+    setFrame(imageSrc);
+    setCapturing(false);
   }, [webCamRef]);
 
-  const login = () => {
-    doAuth();
-  }
+  useEffect(() => {
+    if (frame) {
+      login();
+    }
+  }, [frame, capturing]);
 
   /*
   The screenshotFormat prop allows us to specify the format of the screenshot.
@@ -52,29 +62,18 @@ const Login: NextPageWithLayout = () => {
         {loading && "Cargando..."}
     </Container>
     <Container>
-        {imgSrc ? ( <img src={imgSrc} alt="webcam" /> )
-        : (
-          <Webcam
+       <Webcam
             height={600}
             width={600}
             ref={webCamRef}
             mirrored={true}
             screenshotFormat='image/jpeg'
             screenshotQuality={0.8} />
-        )}
     </Container>
     <Container>
-        {imgSrc ? 
-        (<>
-        <Button variant="contained" onClick={login}>Log In</Button>
-        </>
-        )
-        :
-        (
-          <>
+        <>
             <Button variant="contained" onClick={capture}>Tomar foto</Button>
           </>
-        )}
     </Container>
     </>
   );

@@ -1,8 +1,12 @@
 import os
 import glob
+from PIL import Image
+from base64 import b64decode
+from io import BytesIO
 import cv2
-from face_recognition import face_encodings, face_locations
-from faces.helpers import save_encodings
+import numpy as np
+from face_recognition import face_encodings, face_locations, compare_faces, face_distance
+from faces.helpers import find_all, save_encodings
 
 samples = os.environ['CELSO_SAMPLES']
 unknown = os.environ['CELSO_UNKNOWN']
@@ -28,51 +32,58 @@ class Detect():
         encodings = face_encodings(image, locations)
         return encodings
 
-    def encode(self, id):
+    def encode(self, id, username):
         """Read images from file system and encode them all."""
         id_path = os.path.join(samples, id)
         images = [cv2.imread(file) for file in glob.glob(id_path + '/*.jpg')]
         try:
             encodings = list(map(self.get_encodings, images))
-            result = save_encodings(id, encodings)
+            result = save_encodings(id, username, encodings)
             return result
         except ValueError as error:
             print(error)
-            return {'error': repr(error)}
+            return {'error': error}
         
-    def match(self, id):
-        msg = ''
-        video_capture = cv2.VideoCapture(0)
-        ret, frame = video_capture.read()
-        small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        rgb_small_frame = small_frame[:, :, ::-1]
-        face_locations = face_locations(rgb_small_frame)
-        face_encodings = face_encodings(rgb_small_frame, face_locations)
-        face_names = []
-        if(face_encodings == []):
-            msg = 'Faces not found'
-        else:
-            for face_encoding in face_encodings:
-                matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-                name = "Unknown"
-                face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                best_match_index = np.argmin(face_distances)
-                if matches[best_match_index]:
-                    name = known_face_names[best_match_index]
-                if(name == "Unknown"):
-                    msg = "You are unknown first register your self"
+    def match(self, picture):
+        """Match face with known encodings from data base."""
+        error = None
+        image_encodings = None
+        id = None
+        matches = None
+        encodings = list(find_all())
+        image_data = b64decode(str(picture.split(',')[1]))
+        image = Image.open(BytesIO(image_data))
+        # image.save('/tmp/image.jpg')
+        cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+        try:
+            image_encodings = self.get_encodings(cv_image)
+        except ValueError as error:
+            print(error)
+            return {'error': error}
+        # print(image_encodings)
+        if image_encodings:
+            for face in encodings:
+                id = str(face['_id'])
+                username = str(face['username'])
+                samples = [np.array(x) for x in face['encodings']]
+                matches = compare_faces(samples, image_encodings[0])
+                # for sample in samples:
+                #     matches = compare_faces(sample, image_encodings)
+                distances = face_distance(samples, image_encodings[0])
+                best_match = np.argmin(distances)
+                if matches[best_match]:
+                    return({'_id': id, 'username': username})
                 else:
-                    msg = name
-                face_names.append(name)
-            for (top, right, bottom, left), name in zip(face_locations, face_names):
-                top *= 4
-                right *= 4
-                bottom *= 4
-                left *= 4
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
-            os.chdir(unknown_path)
-            rand_no = np.random.random_sample()
-            cv2.imwrite(str(rand_no)+".jpg", frame)
+                    error = 'No matches.'
+        else:
+            error = 'Not known.'
+            # for (top, right, bottom, left), name in zip(face_locations, face_names):
+            #     top *= 4
+            #     right *= 4
+            #     bottom *= 4
+            #     left *= 4
+            #     cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            #     cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            #     font = cv2.FONT_HERSHEY_DUPLEX
+            #     cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+        return {'error': error}
