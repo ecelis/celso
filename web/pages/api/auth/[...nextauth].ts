@@ -2,23 +2,29 @@ import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import clientPromise, { mongodbUri } from '@/src/helpers/mongodb';
-import { getCsrfToken } from 'next-auth/react';
+import { randomBytes, randomUUID } from 'crypto';
+import axios from 'axios';
+import apiRoutes from '@/src/routes/routes';
 
 export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   providers: [
     CredentialsProvider({
-      name: 'FaceDetection',
-     credentials: { _id: { type: 'text'}, username: { type: 'text'}},
+      id: 'face-id',
+      name: 'FaceID',
+      credentials: {
+        picture: {type: 'text'}  // base64 encoded picture
+      },
       // @ts-ignore
       async authorize(credentials, req) {
-        // Add logic to supply credentials
-        console.log(credentials);
-        const user = credentials?._id !== 'undefined' ? {
-          _id: credentials?._id, 
-          username: credentials?.username,
-          nonce: req.body?.csrfToken // await getCsrfToken({ req })
-        } : null;
+        let user = null;
+        const res = await axios.post(apiRoutes.MATCH, {
+          picture: credentials?.picture
+        });
+        const { error } = res.data;
+        if(!error) {
+          user = res.data;
+        }
         return user;
       }
     }),
@@ -29,6 +35,11 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.CONGRESS_SECRET,
   session: {
     strategy: 'jwt',
+    maxAge: 12 * 60 * 60,
+    updateAge: 11 * 60 * 60,
+    generateSessionToken: () => {
+      return randomUUID?.() ?? randomBytes(32).toString('hex');
+    }
   },
   jwt: {
     secret: process.env.CONGRESS_SECRET
@@ -38,13 +49,9 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token }) {
-        token.useRole = "admin"
+        // token.useRole = "admin"
         return token
     },
-    // async session({ session, token }: { session: any; token: any }) {
-    //     session.user.username = token.sub
-    //     return session
-    //   },
   },
   events: {},
   theme: { colorScheme: 'light' },
