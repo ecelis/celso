@@ -53,22 +53,18 @@ class Detect():
         encodings = list(find_all())
         image_data = b64decode(str(picture.split(',')[1]))
         image = Image.open(BytesIO(image_data))
-        # image.save('/tmp/image.jpg')
         cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
         try:
             image_encodings = self.get_encodings(cv_image)
         except ValueError as error:
             print(error)
             return {'error': error}
-        # print(image_encodings)
         if image_encodings:
             for face in encodings:
                 id = str(face['_id'])
                 username = str(face['username'])
                 samples = [np.array(x) for x in face['encodings']]
                 matches = compare_faces(samples, image_encodings[0])
-                # for sample in samples:
-                #     matches = compare_faces(sample, image_encodings)
                 distances = face_distance(samples, image_encodings[0])
                 best_match = np.argmin(distances)
                 if matches[best_match]:

@@ -27,7 +27,7 @@ def create_app(test_config=None):
 
     @app.route('/')
     def index():
-        return {'Sobre el Rio, version': '0.0.1'}
+        return {'Sobre el Rio, version': '0.0.2'}
     
     @app.route('/info')
     def info():
