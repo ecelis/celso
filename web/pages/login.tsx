@@ -4,9 +4,9 @@ import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
 import { Button, Container } from '@mui/material';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
-import { getProviders, signIn } from "next-auth/react"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "./api/auth/[...nextauth]";
+import { signIn } from 'next-auth/react';
 
 type LoginResponse = {
   _id: string,
