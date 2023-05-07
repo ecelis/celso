@@ -1,8 +1,12 @@
+"""
+Face detection for Celso by @ecelis.
+"""
+
 import os
 import glob
-from PIL import Image
 from base64 import b64decode
 from io import BytesIO
+from PIL import Image
 import cv2
 import numpy as np
 from face_recognition import face_encodings, face_locations, compare_faces, face_distance
@@ -19,36 +23,32 @@ class Detect():
 
     def get_encodings(self, image):
         """Get faces from one image and return it encoded."""
-        error = None
-        # small_img = cv2.resize(image, (0, 0), fx=0.25, fy=0.25)
-        # rgb_small_img = small_img[:, :, ::-1]
-        # print(rgb_small_img)
         locations = face_locations(image)
         locations_len = len(locations)
         if locations_len > 1:
-           raise ValueError('More than one face detected.')
+            raise ValueError('More than one face detected.')
         if locations_len < 1:
-           raise ValueError("Couldn't detect any face.")
+            raise ValueError("Couldn't detect any face.")
         encodings = face_encodings(image, locations)
         return encodings
 
-    def encode(self, id, username):
+    def encode(self, _id, username):
         """Read images from file system and encode them all."""
-        id_path = os.path.join(samples, id)
+        id_path = os.path.join(samples, _id)
         images = [cv2.imread(file) for file in glob.glob(id_path + '/*.jpg')]
         try:
             encodings = list(map(self.get_encodings, images))
-            result = save_encodings(id, username, encodings)
+            result = save_encodings(_id, username, encodings)
             return result
         except ValueError as error:
             print(error)
             return {'error': error}
-        
+
     def match(self, picture):
         """Match face with known encodings from data base."""
         error = None
         image_encodings = None
-        id = None
+        _id = None
         matches = None
         encodings = list(find_all())
         image_data = b64decode(str(picture.split(',')[1]))
@@ -61,25 +61,16 @@ class Detect():
             return {'error': error}
         if image_encodings:
             for face in encodings:
-                id = str(face['_id'])
+                _id = str(face['_id'])
                 username = str(face['username'])
-                samples = [np.array(x) for x in face['encodings']]
-                matches = compare_faces(samples, image_encodings[0])
-                distances = face_distance(samples, image_encodings[0])
+                sample_encodings = [np.array(x) for x in face['encodings']]
+                matches = compare_faces(sample_encodings, image_encodings[0])
+                distances = face_distance(sample_encodings, image_encodings[0])
                 best_match = np.argmin(distances)
                 if matches[best_match]:
-                    return({'_id': id, 'username': username})
-                else:
-                    error = 'No matches.'
+                    return({'_id': _id, 'username': username})
+                error = 'No matches.'
         else:
             error = 'Not known.'
-            # for (top, right, bottom, left), name in zip(face_locations, face_names):
-            #     top *= 4
-            #     right *= 4
-            #     bottom *= 4
-            #     left *= 4
-            #     cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-            #     cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-            #     font = cv2.FONT_HERSHEY_DUPLEX
-            #     cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+
         return {'error': error}

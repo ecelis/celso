@@ -2,7 +2,6 @@
 Utility functions for Celso FaceID by @ecelis
 """
 
-import os
 import json
 from datetime import datetime
 from typing import Any
