@@ -1,8 +1,5 @@
-from bson import ObjectId
-import json
 from flask import redirect, request, g
 from faces import create_app
-from faces import video_transform_track
 from faces.detect import Detect
 from faces.util import MongoJSONEncoder
 

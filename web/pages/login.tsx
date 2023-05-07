@@ -3,7 +3,6 @@ import Layout from '@/src/components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
 import { Button, Container } from '@mui/material';
-import useAxios from 'axios-hooks';
 import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { getProviders, signIn } from "next-auth/react"
 import { getServerSession } from "next-auth/next"
@@ -18,19 +17,6 @@ const Login: NextPageWithLayout = () => {
   const webCamRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [frame, setFrame] = useState(null);
-  const [{ data, loading, error}, login] = useAxios<LoginResponse>(
-    {
-        url: '/api/login',
-        method: 'POST',
-        data: {
-          picture: frame,
-        },
-    },
-    {
-        manual: true,
-        autoCancel: false
-    }
-  )
 
   const capture = useCallback(() => {
     setCapturing(true);
@@ -46,16 +32,10 @@ const Login: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (frame) {
-      login();
+      // login();
+      signIn('face-id', {redirect: true, picture: frame })
     }
   }, [frame, capturing]);
-
-  useEffect(() => {
-    if(data) {
-      signIn('credentials', {redirect: false, _id: data._id, username: data.username})
-    }
-  },
-  [data])
 
   /*
   The screenshotFormat prop allows us to specify the format of the screenshot.
@@ -68,11 +48,6 @@ const Login: NextPageWithLayout = () => {
   */
   return (
     <>
-    <Container>
-        {error && <p>{error.message}</p>}
-        {data && <p>{data?.username}</p>}
-        {loading && "Cargando..."}
-    </Container>
     <Container>
        <Webcam
             height={240}
@@ -106,7 +81,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   // Note: Make sure not to redirect to the same page
   // To avoid an infinite loop!
   if (session) {
-    return { redirect: { destination: "/" } };
+    return { redirect: { destination: "/dashboard" } };
   }
   
   return { props: {} };
