@@ -1,3 +1,7 @@
+"""
+MongoDB helpers for Celso by @ecelis
+"""
+
 import os
 from bson import ObjectId
 from pymongo import MongoClient
@@ -21,10 +25,6 @@ def get_connection():
     """Reurn the MongoClient instance."""
     return client
 
-def close_connection(client):
-    """"Set to None the MongoClient instance."""
-    client = None
-
 def save_encodings(id, username, encodings):
     """"Persist to MongoDB a list representation of the face encodings."""
     user_encodings = db.get_collection(collection['USER_ENCODINGS'])
@@ -40,8 +40,9 @@ def save_encodings(id, username, encodings):
     return result
 
 def find_all():
+    """Fetch all known samples encodings"""
     user_encodings = db.get_collection(collection['USER_ENCODINGS'])
-    result = user_encodings.find();
+    result = user_encodings.find()
     return result
 
 def find_encodings_by_id(id):
