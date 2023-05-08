@@ -1,10 +1,28 @@
+/**
+   Copyright 2023 Ernesto A. Celis de la Fuente
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import { useSession, signOut } from 'next-auth/react';
+import { Container } from '@mui/material';
 
 function Navbar() {
+  const { data: session } = useSession();
     return (
         <AppBar
         position="static"
@@ -16,19 +34,27 @@ function Navbar() {
         <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
           <Link href="/">Congress</Link>
         </Typography>
-        <nav>
-          <Link
-            variant="button"
-            color="text.primary"
-            href="register"
-            sx={{ my: 1, mx: 1.5 }}
-          >
-            Register
-          </Link>
-        </nav>
+        {session ?
+        <>
+          <nav>
+            <Link
+              variant="button"
+              color="text.primary"
+              href="register"
+              sx={{ my: 1, mx: 1.5 }}
+            >
+              Register
+            </Link>
+          </nav>
+          <Button onClick={() => [signOut()]} variant="outlined" sx={{ my: 1, mx: 1.5 }}>
+            Log Out
+          </Button>
+        </>
+        :
         <Button href="login" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
           Login
         </Button>
+        }
       </Toolbar>
     </AppBar>
     );

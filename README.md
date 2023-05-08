@@ -1,5 +1,9 @@
 # Congress
 
+NextJS + next-auth + Face Identification
+
+Copyrigth 2023 Ernesto Celis. Licensed under the terms of the Apache 2.0 License.
+
 ## Dependencies
 
 - Anaconda
