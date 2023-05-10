@@ -19,6 +19,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import { useSession, signOut } from 'next-auth/react';
+import Avatar from '@mui/material/Avatar';
 import { Container } from '@mui/material';
 
 function Navbar() {

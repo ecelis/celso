@@ -17,23 +17,27 @@
 import {ReactElement} from 'react';
 import Layout from '@/src/components/Layout';
 import type { NextPageWithLayout } from './_app'
-import { useSession, signIn, signOut } from 'next-auth/react';
-import { getServerSession } from "next-auth/next"
-
+import { useSession } from 'next-auth/react';
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "./api/auth/[...nextauth]";
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const Dashboard: NextPageWithLayout = () => {
-    const { data: session } = useSession()
-    console.log(session?.user);
+    const { data: session } = useSession();
     if(session) {
-        return (<>
-                <Typography
-                variant='h4'>Dashboard</Typography>
-                {/* <h4>{accessToken && accessToken}</h4> */}
-            </>
-        );
-    }    
+      return (
+        <Box
+          sx={{
+            mt: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
+          }}
+        >
+          <Typography variant="h4">Dashboard</Typography>
+        </Box>
+      );
+    }
 }
 
 Dashboard.getLayout = function getLayout(page: ReactElement) {
