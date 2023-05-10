@@ -26,7 +26,7 @@ MONGO_DB = os.environ.get('MONGODB_DB', 'celso')
 mongo_uri = MONGO_URL + MONGO_DB + '?retryWrites=true&w=majority'
 pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
-db = client[os.environ.get('MONGODB_DB', 'celso')]
+db = client[MONGO_DB]
 
 collection = {
     'USER_ENCODINGS': 'UserEncodings'

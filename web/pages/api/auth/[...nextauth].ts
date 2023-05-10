@@ -42,9 +42,8 @@ export const authOptions: NextAuthOptions = {
         if(!error) {
           const data = res.data;
           user = {
-            username: data.username,
             name: data.username,
-            picture: data.picture
+            image: credentials?.picture
           };
         }
         console.log('user', user);
@@ -70,12 +69,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login'
   },
-  callbacks: {
-    // async jwt({ token }) {
-    //     // token.useRole = "admin"
-    //     return token
-    // },
-  },
+  callbacks: {},
   events: {},
   theme: { colorScheme: 'light' },
   debug: true,

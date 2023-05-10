@@ -10,21 +10,6 @@ type Data = {
   success: boolean,
 }
 
-// async function save(data: string, id: string) {
-//     const imageBuffer = decodeBase64Image(data);
-//     try {
-//         const CELSO_SAMPLES = '/tmp/samples/' + id + '/';
-//         if(!fs.existsSync(CELSO_SAMPLES)) {
-//           await fs.mkdirSync(CELSO_SAMPLES)
-//         }
-//         const fileName = CELSO_SAMPLES + id.substring(0, 36) + '_' +  uuidv4() + '.jpg' 
-//         // @ts-ignore
-//         fs.writeFileSync(fileName, imageBuffer);
-//     } catch (error) {
-//       console.log(error);
-//     }
-// } //https://codepen.io/mozmorris/pen/yLYKzyp?editors=0011
-
 export const config = {
   api: {
     bodyParser: {

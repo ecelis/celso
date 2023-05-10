@@ -13,11 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-const baseUrl = process.env.FACES_URL;
-console.log(baseUrl)
+const facesUrl = process.env.FACES_URL;
+
 const apiRoutes = {
-    REGISTER: baseUrl + '/register',
-    MATCH: baseUrl + '/match',
+    REGISTER: facesUrl + '/register',
+    MATCH: facesUrl + '/match',
 }
 
 export default apiRoutes;
