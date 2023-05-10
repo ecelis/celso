@@ -9,7 +9,7 @@
 ### Install required libraries
 
 ```bash
-conda create --name celso --file requirements.txt
+conda create --name celso --file requirements.yml
 ```
 
 ### MongoDB
