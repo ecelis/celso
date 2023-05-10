@@ -13,15 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
-import Navbar from './Navbar'
-import Footer from './Footer'
-import { PropsWithChildren } from 'react'
+import Head from 'next/head';
+import CssBaseline from '@mui/material/CssBaseline';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import { PropsWithChildren } from 'react';
+import Container from '@mui/material/Container';
 
 export default function Layout({ children }: PropsWithChildren) {
   return (
     <>
+      <Head>
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+      </Head>
+      <CssBaseline />
       <Navbar />
-      <main>{children}</main>
+      <Container component="main" maxWidth="xs">{children}</Container>
       <Footer />
     </>
   )
