@@ -41,16 +41,20 @@ class Detect():
         encodings = face_encodings(image, locations)
         return encodings
 
+    def to_cv_image(self, picture):
+        """Trnasform Base64 encoded image to CV2 RGB image"""
+        image_data = b64decode(str(picture.split(',')[1]))
+        image = Image.open(BytesIO(image_data))
+        cv_gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+        return cv_gray_image
+
     def encode(self, pictures, username):
         """Read images from file system and encode them all."""
         error = None
         encodings = []
         for picture in pictures:
-            image_data = b64decode(str(picture.split(',')[1]))
-            image = Image.open(BytesIO(image_data))
-            cv_gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
             try:
-                image_encodings = self.get_encodings(cv_gray_image)
+                image_encodings = self.get_encodings(self.to_cv_image(picture))
                 encodings.append(image_encodings)
             except ValueError as error:
                 return { 'error': error }
@@ -70,12 +74,8 @@ class Detect():
         if len(encodings) < 1:
             error = 'Faces DB empty'
         else:
-            error = 'Face DB is empty.'
-            image_data = b64decode(str(picture.split(',')[1]))
-            image = Image.open(BytesIO(image_data))
-            cv_gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
             try:
-                image_encodings = self.get_encodings(cv_gray_image)
+                image_encodings = self.get_encodings(self.to_cv_image(picture))
             except ValueError as error:
                 print(error)
                 return {'error': error}
