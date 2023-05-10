@@ -17,7 +17,7 @@ import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import Layout from '../src/components/Layout';
 import type { NextPageWithLayout } from './_app'
 import Webcam from 'react-webcam';
-import { Button, Container, TextField } from '@mui/material';
+import { Button, Typography, TextField, Box, FormControlLabel, Checkbox } from '@mui/material';
 import useAxios from 'axios-hooks';
 
 type RegisterResponse = {
@@ -73,31 +73,53 @@ const Register: NextPageWithLayout = () => {
   highest quality. The default value is 0.92.
   */
   return (
-    <>
-    <Container>
-        {error && <p>{error.message}</p>}
-        {data?.success && <p>Registro exitoso</p>}
-        {loading && "Cargando..."}
-        {capturing && "Capturando..."}
-    </Container>
-    <Container>
-        <TextField id="name" label="Nombre" variant="standard"
-        required={true}
+    <Box
+      sx={{
+        mt: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
+      }}
+    >
+      <Typography component="h1" variant="h5">
+        Register User Face
+      </Typography>
+      <Box component="form" onSubmit={(e) => e.preventDefault()} noValidate sx={{ mt: 1 }}>
+      <TextField
+        margin="normal"
+        required
+        fullWidth
+        id="username"
+        name="username"
+        label="Nombre"
         placeholder='Juan Perez'
+        autoFocus
         value={username}
         onChange={(e) => {setUsername(e.target.value)}} />
-       <Webcam
-          height={240}
-          width={160}
-          ref={webCamRef}
-          mirrored={true}
-          screenshotFormat='image/jpeg'
-          screenshotQuality={0.8} />
-    </Container>
-    <Container>
-        <Button variant="contained" onClick={capture}>Enviar</Button>
-    </Container>
-    </>
+        <FormControlLabel
+              control={<Checkbox value="isAdmin" color="primary" />}
+              label="Is Admin?"
+            />
+        <Webcam
+            height={240}
+            width={160}
+            ref={webCamRef}
+            mirrored={true}
+            screenshotFormat='image/jpeg'
+            screenshotQuality={0.8} />
+        <Button
+          fullWidth
+          variant="contained"
+          sx={{ mt: 3, mb: 2 }}
+          onClick={capture}>Registrar</Button>
+      </Box>
+      <Box sx={{ mt: 1 }}>
+          {error && <p>{error.message}</p>}
+          {data?.success && <p>Registro exitoso</p>}
+          {loading && "Cargando..."}
+          {capturing && "Capturando..."}
+      </Box>
+    </Box>
   );
 }
 
