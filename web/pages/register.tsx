@@ -27,6 +27,8 @@ type RegisterResponse = {
     success: boolean;
 }
 
+const SAMPLES = 3;
+
 const Register: NextPageWithLayout = () => {
   const webCamRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
@@ -51,7 +53,7 @@ const Register: NextPageWithLayout = () => {
   const capture = useCallback(() => {
     setCapturing(true);
     const _frames = [];
-    for (let f = 0; f < 10; f++) {
+    for (let f = 0; f < SAMPLES; f++) {
       // @ts-ignore
       const imageSrc = webCamRef.current.getScreenshot();
       _frames.push(imageSrc);
@@ -62,7 +64,7 @@ const Register: NextPageWithLayout = () => {
   }, [webCamRef, username]);
 
   useEffect(() => {
-    if (frames.length > 9) {
+    if (frames.length === SAMPLES) {
       register();
     }
   }, [frames, capturing]);
@@ -120,7 +122,7 @@ const Register: NextPageWithLayout = () => {
         </Box>
         <Box sx={{ mt: 1 }}>
             {error && <p>{error.message}</p>}
-            {data?.success && <p>Registro exitoso</p>}
+            {data?.success && <p>{data}</p>}
             {loading && "Cargando..."}
             {capturing && "Capturando..."}
         </Box>

@@ -29,4 +29,4 @@ db = client[os.environ.get('MONGODB_DB', 'celso')]
 
 db.create_collection('UserEncodings')
 user_encodings = db.get_collection('UserEncodings')
-user_encodings.create_index([('oId', ASCENDING)], unique=True)
+user_encodings.create_index([('username', ASCENDING)], unique=True)

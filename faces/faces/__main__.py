@@ -29,13 +29,13 @@ def register():
     error = None
     if request.method == 'POST':
         json_data = request.get_json()
-        _id = json_data['id']
+        picture = json_data['picture']
         username = json_data['username']
         detect = Detect()
-        result = detect.encode(_id, username)
+        result = detect.encode(picture, username)
         if result.acknowledged:
             _id = MongoJSONEncoder().encode(result.inserted_id)
-            return {'id': _id.replace('"', '')}
+            return {'id': _id.replace('"', ''), 'username': username}
         error = 'Unable to register face'
     else:
         error = 'Bad request'

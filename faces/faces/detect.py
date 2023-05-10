@@ -46,17 +46,24 @@ class Detect():
         encodings = face_encodings(image, locations)
         return encodings
 
-    def encode(self, _id, username):
+    def encode(self, pictures, username):
         """Read images from file system and encode them all."""
-        id_path = os.path.join(samples, _id)
-        images = [cv2.imread(file) for file in glob.glob(id_path + '/*.jpg')]
+        error = None
+        encodings = []
+        for picture in pictures:
+            image_data = b64decode(str(picture.split(',')[1]))
+            image = Image.open(BytesIO(image_data))
+            cv_gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+            try:
+                image_encodings = self.get_encodings(cv_gray_image)
+                encodings.append(image_encodings)
+            except ValueError as error:
+                return { 'error': error }
         try:
-            encodings = list(map(self.get_encodings, images))
-            result = save_encodings(_id, username, encodings)
+            result = save_encodings(username, encodings)
             return result
-        except ValueError as error:
-            print(error)
-            return {'error': error}
+        except Exception as error:
+            return { 'error': error }
 
     def match(self, picture):
         """Match face with known encodings from data base."""
@@ -67,9 +74,9 @@ class Detect():
         encodings = list(find_all())
         image_data = b64decode(str(picture.split(',')[1]))
         image = Image.open(BytesIO(image_data))
-        cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+        cv_gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
         try:
-            image_encodings = self.get_encodings(cv_image)
+            image_encodings = self.get_encodings(cv_gray_image)
         except ValueError as error:
             print(error)
             return {'error': error}

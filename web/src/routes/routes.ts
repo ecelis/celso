@@ -14,7 +14,7 @@
    limitations under the License.
 */
 const baseUrl = process.env.FACES_URL;
-
+console.log(baseUrl)
 const apiRoutes = {
     REGISTER: baseUrl + '/register',
     MATCH: baseUrl + '/match',
