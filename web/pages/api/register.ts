@@ -1,13 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 import { HttpStatusCode } from 'axios';
-// import * as fs from 'fs';
-// import { v4 as uuidv4 } from 'uuid';
 import apiRoutes from '@/src/routes/routes';
-// import decodeBase64Image from '@/src/helpers/base64';
+import { httpError } from '@/src/enums/errorMessages'; 
 
-type Data = {
-  success: boolean,
+interface IResponseData {
+  error?: string;
+  _id?: string;
+  username?: string;
+  picture?: string;
 }
 
 export const config = {
@@ -19,7 +20,7 @@ export const config = {
 }
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<IResponseData>
 ) {
     if(req.method === 'POST') {
       const {picture, username} = req.body;
@@ -30,8 +31,13 @@ export default async function handler(
           username: username,
         }
       );
-      res.status(HttpStatusCode.Created).json(result.data);
+      const data = result.data;
+      if (data.error) {
+        res.status(HttpStatusCode.Conflict).json({error: data.error});
+      }
+      res.status(HttpStatusCode.Created).json(data);
     } else {
-      res.status(HttpStatusCode.BadRequest).json({ success: false });    
+      res.status(HttpStatusCode.MethodNotAllowed)
+        .json(httpError(HttpStatusCode.MethodNotAllowed));
     }
 }

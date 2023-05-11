@@ -33,18 +33,19 @@ def register():
         username = json_data['username']
         detect = Detect()
         result = detect.encode(picture, username)
-        if result.acknowledged:
-            _id = MongoJSONEncoder().encode(result.inserted_id)
-            return {'id': _id.replace('"', ''), 'username': username}
-        error = 'Unable to register face'
+        if result['success']:
+            data = result['data']
+            if data.acknowledged:
+                _id = MongoJSONEncoder().encode(data.inserted_id)
+                return {'id': _id.replace('"', ''), 'username': username}
+        error = 'Unable to register face, either it is already registered, non-human or database issue.'  # pylint: disable=line-too-long
     else:
         error = 'Bad request'
     return {'error': error}
 
 @app.route('/match', methods=['POST'])
-def match():
+def duplicate():
     """Match a face against known sample encodings."""
-    error = None
     if request.method == 'POST':
         json_data = request.get_json()
         detect = Detect()
@@ -52,8 +53,8 @@ def match():
         error = result.get('error', None)
         if not error:
             return result
-        error = result['error']
-    return {'error': error}
+        return error
+    return None
 
 if __name__ == '__main__':
     app.run()

@@ -45,52 +45,56 @@ class Detect():
         """Trnasform Base64 encoded image to CV2 RGB image"""
         image_data = b64decode(str(picture.split(',')[1]))
         image = Image.open(BytesIO(image_data))
-        cv_gray_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
-        return cv_gray_image
+        cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+        return cv_image
+
+    def match_encodings(self, candidate):
+        """Pass a candidate image encoding and match against known in encodings in DB"""
+        known = list(find_all())
+        if candidate:
+            for face in known:
+                _id = str(face['_id'])
+                username = str(face['username'])
+                sample_encodings = [np.array(x) for x in face['encodings']]
+                matches = compare_faces(sample_encodings, candidate[0])
+                distances = face_distance(sample_encodings, candidate[0])
+                best_match = np.argmin(distances)
+                if matches[best_match]:
+                    return {'_id': _id, 'username': username, 'success': True}
+                error = 'No matches.'
+        else:
+            error = 'Not known.'
+        return {'error': error, 'success': False}
 
     def encode(self, pictures, username):
-        """Read images from file system and encode them all."""
+        """Enocde Base64 pictures to numpy array and save associated with username."""
         error = None
         encodings = []
         for picture in pictures:
             try:
                 image_encodings = self.get_encodings(self.to_cv_image(picture))
+                duplicate = self.match_encodings(image_encodings)
+                if duplicate['success']:
+                    duplicate['success'] = False
+                    return duplicate
                 encodings.append(image_encodings)
-            except ValueError as error:
-                return { 'error': error }
+            except ValueError as ex:
+                error = ex
         try:
             result = save_encodings(username, encodings)
-            return result
-        except Exception as error:
-            return { 'error': error }
+            return {'data': result, 'success': True}
+        except Exception as ex:
+            error = ex
+        return { 'error': error }
 
     def match(self, picture):
         """Match face with known encodings from data base."""
         error = None
-        image_encodings = None
-        _id = None
-        matches = None
-        encodings = list(find_all())
-        if len(encodings) < 1:
-            error = 'Faces DB empty'
-        else:
-            try:
-                image_encodings = self.get_encodings(self.to_cv_image(picture))
-            except ValueError as error:
-                print(error)
-                return {'error': error}
-            if image_encodings:
-                for face in encodings:
-                    _id = str(face['_id'])
-                    username = str(face['username'])
-                    sample_encodings = [np.array(x) for x in face['encodings']]
-                    matches = compare_faces(sample_encodings, image_encodings[0])
-                    distances = face_distance(sample_encodings, image_encodings[0])
-                    best_match = np.argmin(distances)
-                    if matches[best_match]:
-                        return({'_id': _id, 'username': username})
-                    error = 'No matches.'
-            else:
-                error = 'Not known.'
-
-        return {'error': error}
+        try:
+            image_encodings = self.get_encodings(self.to_cv_image(picture))
+            result = self.match_encodings(image_encodings)
+            return result
+        except ValueError as error:
+            print(error)
+            return {'error': error}
+            

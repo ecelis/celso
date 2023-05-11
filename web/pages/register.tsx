@@ -61,13 +61,13 @@ const Register: NextPageWithLayout = () => {
     // @ts-ignore
     setFrames(_frames);
     setCapturing(false);
-  }, [webCamRef, username]);
+  }, [webCamRef]);
 
   useEffect(() => {
     if (frames.length === SAMPLES) {
       register();
     }
-  }, [frames, capturing]);
+  }, [frames, capturing, register]);
 
   /*
   The screenshotFormat prop allows us to specify the format of the screenshot.

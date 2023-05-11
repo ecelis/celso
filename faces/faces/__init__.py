@@ -20,7 +20,7 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
-def create_app(test_config=None):
+def create_app(test_config=None):  # pylint: disable=unused-argument
     """
     Creat e new instance from app factory
     """
