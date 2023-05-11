@@ -46,7 +46,6 @@ export const authOptions: NextAuthOptions = {
             image: credentials?.picture
           };
         }
-        console.log('user', user);
         return user;
       }
     }),

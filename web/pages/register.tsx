@@ -22,6 +22,7 @@ import useAxios from 'axios-hooks';
 import { useSession } from 'next-auth/react';
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "./api/auth/[...nextauth]";
+// import { useTheme } from '@mui/material/styles';
 
 type RegisterResponse = {
     success: boolean;
@@ -30,12 +31,15 @@ type RegisterResponse = {
 const SAMPLES = 3;
 
 const Register: NextPageWithLayout = () => {
+  // const theme = useTheme();
   const webCamRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [frames, setFrames] = useState([]);
   const [username, setUsername] = useState('');
+  const [retries, setRetries] = useState(0);
+  const [retryError, setRetryError] = useState(null);
   const { data: session } = useSession()
-  const [{ data, loading, error}, register] = useAxios<RegisterResponse>(
+  const [{ data, loading, error, response }, register] = useAxios<RegisterResponse>(
     {
         url: '/api/register',
         method: 'POST',
@@ -65,9 +69,25 @@ const Register: NextPageWithLayout = () => {
 
   useEffect(() => {
     if (frames.length === SAMPLES) {
-      register();
+      setRetries(retries + 1);
+      register().catch(() => {
+        switch (error?.response?.status) {
+          case 409:
+            setRetries(retries + 1);
+            break;
+          default:
+            console.log('');  // TODO handle default error
+        }
+      });
     }
-  }, [frames, capturing, register]);
+  // eslint-disable-next-line
+  }, [frames, capturing, register ]);
+
+  useEffect(() => {
+    if (retries !== 0 && retries < 3) {
+      capture();
+    }
+  }, [capture, retries, webCamRef]);
 
   /*
   The screenshotFormat prop allows us to specify the format of the screenshot.
@@ -107,6 +127,14 @@ const Register: NextPageWithLayout = () => {
             control={<Checkbox value="isAdmin" color="primary" />}
             label="Is Admin?"
           />
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="h6" color={error ? 'error' : 'success.light'}>
+              {error && error.message}
+              {data?.success && <span>{data.success}</span>}
+              {loading && "Cargando..."}
+              {capturing && "Capturando..."}
+            </Typography>
+          </Box>
           <Webcam
               height={240}
               width={160}
@@ -119,12 +147,6 @@ const Register: NextPageWithLayout = () => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
             onClick={capture}>Registrar</Button>
-        </Box>
-        <Box sx={{ mt: 1 }}>
-            {error && <p>{error.message}</p>}
-            {data?.success && <p>{data}</p>}
-            {loading && "Cargando..."}
-            {capturing && "Capturando..."}
         </Box>
       </Box>
     );
