@@ -31,13 +31,12 @@ type RegisterResponse = {
 const SAMPLES = 3;
 
 const Register: NextPageWithLayout = () => {
-  // const theme = useTheme();
   const webCamRef = useRef(null);
   const [capturing, setCapturing] = useState(false);
   const [frames, setFrames] = useState([]);
   const [username, setUsername] = useState('');
   const [retries, setRetries] = useState(0);
-  const [retryError, setRetryError] = useState(null);
+  // const [retryError, setRetryError] = useState(null);
   const { data: session } = useSession()
   const [{ data, loading, error, response }, register] = useAxios<RegisterResponse>(
     {
@@ -71,12 +70,14 @@ const Register: NextPageWithLayout = () => {
     if (frames.length === SAMPLES) {
       setRetries(retries + 1);
       register().catch(() => {
+        setFrames([]);
         switch (error?.response?.status) {
           case 409:
+            console.log('retry');
             setRetries(retries + 1);
             break;
           default:
-            console.log('');  // TODO handle default error
+            console.log('WEird');  // TODO handle default error
         }
       });
     }
