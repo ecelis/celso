@@ -16,12 +16,23 @@ Celso FaceID by @ecelis
    limitations under the License.
 """
 
-from flask import request
+from http import HTTPStatus
+from flask import abort, jsonify, request
 from faces import create_app
 from faces.detect import Detect
 from faces.util import MongoJSONEncoder
 
 app = create_app()
+
+@app.errorhandler(HTTPStatus.METHOD_NOT_ALLOWED.value)
+def method_not_allowed(error):
+    """Method not allowed 405 Response"""
+    return jsonify(error=str(error)), HTTPStatus.METHOD_NOT_ALLOWED.value
+
+@app.errorhandler(HTTPStatus.CONFLICT.value)
+def conflict(error):
+    """Conflict 409 Reponse."""
+    return jsonify(error=str(error)), HTTPStatus.CONFLICT.value
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -39,9 +50,11 @@ def register():
                 _id = MongoJSONEncoder().encode(data.inserted_id)
                 return {'id': _id.replace('"', ''), 'username': username}
         error = 'Unable to register face, either it is already registered, non-human or database issue.'  # pylint: disable=line-too-long
-    else:
-        error = 'Bad request'
-    return {'error': error}
+        abort(HTTPStatus.CONFLICT.value,
+              description=error)
+
+    abort(HTTPStatus.METHOD_NOT_ALLOWED.value,
+          description=HTTPStatus.METHOD_NOT_ALLOWED.description)
 
 @app.route('/match', methods=['POST'])
 def duplicate():
@@ -54,7 +67,9 @@ def duplicate():
         if not error:
             return result
         return error
-    return None
+
+    abort(HTTPStatus.METHOD_NOT_ALLOWED.value,
+          description=HTTPStatus.METHOD_NOT_ALLOWED.description)
 
 if __name__ == '__main__':
     app.run()
