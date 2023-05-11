@@ -28,17 +28,23 @@ export const authOptions: NextAuthOptions = {
       id: 'face-id',
       name: 'FaceID',
       credentials: {
-        picture: {type: 'text'}  // base64 encoded picture
+        picture: {type: 'text'} , // base64 encoded picture
+        username: { type: 'text'}
       },
       // @ts-ignore
       async authorize(credentials, req) {
         let user = null;
         const res = await axios.post(apiRoutes.MATCH, {
-          picture: credentials?.picture
+          picture: credentials?.picture,
+          username: credentials?.username
         });
         const { error } = res.data;
         if(!error) {
-          user = res.data;
+          const data = res.data;
+          user = {
+            name: data.username,
+            image: credentials?.picture
+          };
         }
         return user;
       }
@@ -62,12 +68,7 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login'
   },
-  callbacks: {
-    async jwt({ token }) {
-        // token.useRole = "admin"
-        return token
-    },
-  },
+  callbacks: {},
   events: {},
   theme: { colorScheme: 'light' },
   debug: true,

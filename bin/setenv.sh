@@ -3,7 +3,7 @@
 export MONGODB_URI=mongodb+srv://celso:Cr2sqNRUo0LjT7hp@cluster0.kim9c.mongodb.net/
 export MONGODB_DB=celso
 export CONGRESS_SECRET=v3rys3cr3t
-export CELSO_SAMPLES=/tmp/samples
+export CELSO_SAMPLES=3
 export CELSO_UNKNOWN=/tmp/unknown
 export EMAIL_SERVER_USER=apikey
 export EMAIL_SERVER_PASSWORD=changeme

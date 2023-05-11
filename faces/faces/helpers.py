@@ -26,7 +26,7 @@ MONGO_DB = os.environ.get('MONGODB_DB', 'celso')
 mongo_uri = MONGO_URL + MONGO_DB + '?retryWrites=true&w=majority'
 pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
-db = client[os.environ.get('MONGODB_DB', 'celso')]
+db = client[MONGO_DB]
 
 collection = {
     'USER_ENCODINGS': 'UserEncodings'
@@ -40,14 +40,13 @@ def get_connection():
     """Reurn the MongoClient instance."""
     return client
 
-def save_encodings(original_id, username, encodings):
+def save_encodings(username, encodings):
     """"Persist to MongoDB a list representation of the face encodings."""
     user_encodings = db.get_collection(collection['USER_ENCODINGS'])
     # TODO Consider using bson instead
     # https://stackoverflow.com/questions/12272642/serialize-deserialize-float-arrays-to-binary-file-using-bson-in-python
     encodings_list = [encoding[0].tolist() for encoding in encodings]
     document = {
-        'oId': original_id,
         'username': username,
         'encodings': encodings_list
     }

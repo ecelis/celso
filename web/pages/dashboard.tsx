@@ -17,13 +17,13 @@
 import {ReactElement} from 'react';
 import Layout from '@/src/components/Layout';
 import type { NextPageWithLayout } from './_app'
+import { getServerSession } from "next-auth/next"
 import { useSession } from 'next-auth/react';
-import { getServerSession } from "next-auth/next";
 import { authOptions } from "./api/auth/[...nextauth]";
 import { Box, Typography } from '@mui/material';
 
 const Dashboard: NextPageWithLayout = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     if(session) {
       return (
         <Box
@@ -50,7 +50,6 @@ Dashboard.getLayout = function getLayout(page: ReactElement) {
 
   export async function getServerSideProps(context: GetServerSidePropsContext) {
     const session = await getServerSession(context.req, context.res, authOptions);
-    
     // If the user is already logged in, redirect.
     // Note: Make sure not to redirect to the same page
     // To avoid an infinite loop!
@@ -58,7 +57,7 @@ Dashboard.getLayout = function getLayout(page: ReactElement) {
       return { redirect: { destination: "/login" } };
     }
     
-    return { props: {} };
+    return { props: {  } };
   }
   
   
