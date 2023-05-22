@@ -24,41 +24,46 @@ import { Container } from '@mui/material';
 
 function Navbar() {
   const { data: session } = useSession();
-    return (
-        <AppBar
-        position="static"
-        color="default"
-        elevation={0}
-        sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
-      >
-        <Toolbar sx={{ flexWrap: 'wrap' }}>
-        <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-          <Link href="/">Congress</Link>
-        </Typography>
-        {session ?
-        <>
-          <nav>
-            <Link
-              variant="button"
-              color="text.primary"
-              href="register"
-              sx={{ my: 1, mx: 1.5 }}
-            >
-              Register
-            </Link>
-          </nav>
-          <Button onClick={() => [signOut()]} variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-            Log Out
-          </Button>
-        </>
-        :
-        <Button href="login" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
-          Login
+  const {name, image} = session?.user;
+
+  return (
+      <AppBar
+      position="static"
+      color="default"
+      elevation={0}
+      sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
+    >
+      <Toolbar sx={{ flexWrap: 'wrap' }}>
+      <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+        <Link href="/">Congress</Link>
+      </Typography>
+      {session ?
+      <>
+        <nav>
+          <Link
+            variant="button"
+            color="text.primary"
+            href="register"
+            sx={{ my: 1, mx: 1.5 }}
+          >
+            Register
+          </Link>
+        </nav>
+        <Button onClick={() => [signOut()]} variant="outlined" sx={{ my: 1, mx: 1.5 }}>
+          Log Out
         </Button>
-        }
-      </Toolbar>
-    </AppBar>
-    );
+      </>
+      :
+      <Button href="login" variant="outlined" sx={{ my: 1, mx: 1.5 }}>
+        Login
+      </Button>
+      }
+      {session && (
+        <Avatar alt={name} src={image} />
+      )}
+    </Toolbar>
+  </AppBar>
+  );
 }
 
 export default Navbar;
