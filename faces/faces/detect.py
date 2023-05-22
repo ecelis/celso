@@ -50,6 +50,7 @@ class Detect():
 
     def match_encodings(self, candidate):
         """Pass a candidate image encoding and match against known in encodings in DB"""
+        error = 'Not known.'
         known = list(find_all())
         if candidate:
             for face in known:
@@ -62,8 +63,6 @@ class Detect():
                 if matches[best_match]:
                     return {'_id': _id, 'username': username, 'success': True}
                 error = 'No matches.'
-        else:
-            error = 'Not known.'
         return {'error': error, 'success': False}
 
     def encode(self, pictures, username):
@@ -75,6 +74,7 @@ class Detect():
                 image_encodings = self.get_encodings(self.to_cv_image(picture))
                 duplicate = self.match_encodings(image_encodings)
                 if duplicate['success']:
+                    print('Dupe')
                     duplicate['success'] = False
                     return duplicate
                 encodings.append(image_encodings)
