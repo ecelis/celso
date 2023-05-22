@@ -21,10 +21,14 @@ import Typography from '@mui/material/Typography';
 import { useSession, signOut } from 'next-auth/react';
 import Avatar from '@mui/material/Avatar';
 import { Container } from '@mui/material';
+import { IsUppercase } from 'class-validator';
+import { useEffect, useState } from 'react';
+
 
 function Navbar() {
   const { data: session } = useSession();
-  const {name, image} = session?.user;
+  const [user, setUser] = useState();
+  useEffect(() => session && setUser(session.user));  // TODO fix TS warning
 
   return (
       <AppBar
@@ -58,8 +62,8 @@ function Navbar() {
         Login
       </Button>
       }
-      {session && (
-        <Avatar alt={name} src={image} />
+      {user && (
+        <Avatar alt={user.name} src={user.image} />
       )}
     </Toolbar>
   </AppBar>
