@@ -1,12 +1,11 @@
-# Congress
+# CELSo
 
-NextJS + next-auth + Face Identification
-
-Copyrigth 2023 Ernesto Celis. Licensed under the terms of the Apache 2.0 License.
+NextJS + next-auth + Face Identification framework
 
 ## Dependencies
 
 - [Anaconda](https://www.anaconda.com/download)
+    - [conda-forge/miniforge](https://github.com/conda-forge/miniforge/#download) _aarch64/arm64 (Raspberry OS)_
 - [Material UI](https://mui.com/material-ui/getting-started/overview/)
 - [MongoDB](https://www.mongodb.com/try/download/community) _optional_
 - [Rancher desktop](https://rancherdesktop.io/) _optional_
@@ -21,7 +20,7 @@ conda create --name celso --file requirements.yml
 
 ### MongoDB
 
-Ru in docker
+Run in docker
 
 ```bash
 docker run -d -p 27017:27017 mongodb/mongodb-community-server:6.0.5-ubi8
@@ -57,3 +56,7 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## License
+
+Copyrigth 2023 Ernesto Celis. Licensed under the terms of the Apache 2.0 License.
