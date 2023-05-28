@@ -19,7 +19,7 @@ Celso FaceID by @ecelis
 from http import HTTPStatus
 from flask import abort
 from flask_restful import reqparse, Resource
-from marshmallow import ValidationError
+from marshmallow import ValidationError, Schema, fields
 from faces.detect import Detect
 from faces.common.util import MongoJSONEncoder
 

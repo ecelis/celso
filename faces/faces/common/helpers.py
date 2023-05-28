@@ -40,6 +40,9 @@ def get_connection():
     """Reurn the MongoClient instance."""
     return client
 
+def get_mongo_uri():
+    return mongo_uri
+
 def save_encodings(username, encodings):
     """"Persist to MongoDB a list representation of the face encodings."""
     user_encodings = db.get_collection(collection['USER_ENCODINGS'])
