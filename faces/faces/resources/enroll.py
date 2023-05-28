@@ -25,6 +25,7 @@ from marshmallow import Schema, fields, ValidationError, pre_load
 
 
 def must_not_be_blank(data):
+    """Raise ValidationError when empty data"""
     if not data:
         raise ValidationError("Data not provided")
 
@@ -39,6 +40,9 @@ user_schema = UserSchema()
 
 class Enroll(Resource):
     """Enroll faces for ID"""
+    def __init__(self):
+        super().__init__()
+    
     def post(self):
         """Register new face encodings endpoint."""
         post_parser = reqparse.RequestParser()
@@ -55,7 +59,10 @@ class Enroll(Resource):
                 encoded_data = result['data']
                 if encoded_data.acknowledged:
                     _id = MongoJSONEncoder().encode(encoded_data.inserted_id)
-                    return {'id': _id.replace('"', ''), 'username': data['username']}, HTTPStatus.CREATED
+                    return {
+                        'id': _id.replace('"', ''),
+                        'username': data['username']
+                        }, HTTPStatus.CREATED
             error = 'Unable to register face, either it is already registered, non-human or database issue.'  # pylint: disable=line-too-long
             abort(HTTPStatus.CONFLICT.value,
                 description=error)

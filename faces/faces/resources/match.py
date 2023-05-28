@@ -20,13 +20,15 @@ Celso FaceID by @ecelis
 from http import HTTPStatus
 from flask import abort
 from flask_restful import reqparse, Resource
+from marshmallow import ValidationError
 from faces.detect import Detect
-from faces.common.util import MongoJSONEncoder
-from marshmallow import Schema, fields, ValidationError, pre_load
 
 
 class Match(Resource):
     """Match faces against enrolled ones"""
+    def __init__(self):
+        super().__init__()
+    
     def post(self):
         """Identify faces and return match success or denied."""
         post_parser = reqparse.RequestParser()

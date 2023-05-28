@@ -17,12 +17,11 @@ Celso FaceID by @ecelis
 """
 
 from http import HTTPStatus
-from flask import abort, jsonify, request
-from faces import create_app
+from flask import jsonify
 from flask_restful import Api
+from faces import create_app
 from faces.resources.enroll import Enroll
 from faces.resources.match import Match
-from faces.detect import Detect
 
 
 app = create_app()
