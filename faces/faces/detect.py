@@ -22,7 +22,7 @@ from PIL import Image
 import cv2
 import numpy as np
 from face_recognition import face_encodings, face_locations, compare_faces, face_distance
-from faces.helpers import find_all, save_encodings
+from faces.common.helpers import find_all, save_encodings
 
 class Detect():
     """Face detection library for Celso"""

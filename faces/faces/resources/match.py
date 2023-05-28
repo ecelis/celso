@@ -1,5 +1,5 @@
 """
-Face detection module for Celso by @ecelis
+Celso FaceID by @ecelis
 
    Copyright 2023 Ernesto A. Celis de la Fuente
 
@@ -16,28 +16,10 @@ Face detection module for Celso by @ecelis
    limitations under the License.
 """
 
-import os
-from flask import Flask
-from flask_cors import CORS
+
+from flask_restful import Resource
 
 
-def create_app(test_config=None):  # pylint: disable=unused-argument
-    """
-    Create new instance from app factory
-    """
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY=os.environ.get('CONGRESS_SECRET', 'dev'),
-    )
-    CORS(app)
-
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
+class Match(Resource):
+    def post(self):
         pass
-
-    @app.route('/')
-    def index():
-        return {'Sobre el Rio, version': '0.0.3'}
-
-    return app
