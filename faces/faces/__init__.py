@@ -20,15 +20,16 @@ import os
 from flask import Flask
 from flask_cors import CORS
 
+
 def create_app(test_config=None):  # pylint: disable=unused-argument
     """
-    Creat e new instance from app factory
+    Create new instance from app factory
     """
     app = Flask(__name__, instance_relative_config=True)
-    CORS(app)
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('CONGRESS_SECRET', 'dev'),
     )
+    CORS(app)
 
     try:
         os.makedirs(app.instance_path)
@@ -37,6 +38,6 @@ def create_app(test_config=None):  # pylint: disable=unused-argument
 
     @app.route('/')
     def index():
-        return {'Sobre el Rio, version': '0.0.2'}
+        return {'Sobre el Rio, version': '0.0.3'}
 
     return app
