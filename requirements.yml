@@ -6,6 +6,7 @@ dependencies:
   - _libgcc_mutex=0.1=conda_forge
   - _openmp_mutex=4.5=2_gnu
   - alsa-lib=1.2.8=h166bdaf_0
+  - aniso8601=9.0.1=pyhd8ed1ab_0
   - aom=3.5.0=h27087fc_0
   - astroid=2.15.4=py311h38be061_0
   - attr=2.5.1=h166bdaf_1
@@ -30,7 +31,8 @@ dependencies:
   - face_recognition_models=0.3.0=pyh9f0ad1d_0
   - ffmpeg=5.1.2=gpl_h8dda1f0_106
   - flask=2.3.2=pyhd8ed1ab_0
-  - flask_cors=3.0.10=pyhd3deb0d_0
+  - flask-restful=0.3.10=pyhd8ed1ab_0
+  - flask_cors=3.0.10=pyhd3eb1b0_0
   - font-ttf-dejavu-sans-mono=2.37=hab24e00_0
   - font-ttf-inconsolata=3.000=h77eed37_0
   - font-ttf-source-code-pro=2.038=h77eed37_0
@@ -132,6 +134,7 @@ dependencies:
   - nspr=4.35=h27087fc_0
   - nss=3.89=he45b914_0
   - numpy=1.24.3=py311h64a7726_0
+  - opencv=4.7.0=py311h38be061_2
   - openh264=2.3.1=hcb278e6_2
   - openjpeg=2.5.0=hfec8fc6_2
   - openssl=3.1.0=hd590300_3
@@ -150,7 +153,9 @@ dependencies:
   - pyopenssl=23.1.1=pyhd8ed1ab_0
   - pysocks=1.7.1=pyha2e5f31_6
   - python=3.11.3=h2755cc3_0_cpython
+  - python-dateutil=2.8.2=pyhd8ed1ab_0
   - python_abi=3.11=3_cp311
+  - pytz=2023.3=pyhd8ed1ab_0
   - qt-main=5.15.8=h5c52f38_9
   - readline=8.2=h8228510_1
   - requests=2.29.0=pyhd8ed1ab_0
