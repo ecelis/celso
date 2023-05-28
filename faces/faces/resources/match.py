@@ -17,9 +17,32 @@ Celso FaceID by @ecelis
 """
 
 
-from flask_restful import Resource
+from http import HTTPStatus
+from flask import abort
+from flask_restful import reqparse, Resource
+from faces.detect import Detect
+from faces.common.util import MongoJSONEncoder
+from marshmallow import Schema, fields, ValidationError, pre_load
 
 
 class Match(Resource):
+    """Match faces against enrolled ones"""
     def post(self):
-        pass
+        """Identify faces and return match success or denied."""
+        post_parser = reqparse.RequestParser()
+        post_parser.add_argument('picture', required=True, type=str,
+                                 action='append', help='User face picture list')
+        args = post_parser.parse_args()
+        print(args)
+        try:
+            # data = user_schema.load(args)  TODO can Schema be used in Login POST?
+            detect = Detect()
+            result = detect.match(args['picture'][0])
+            error = result.get('error', None)
+            if not error:
+                return result, HTTPStatus.ACCEPTED
+            error = 'Unable to register face, either it is already registered, non-human or database issue.'  # pylint: disable=line-too-long
+            abort(HTTPStatus.CONFLICT.value,
+                description=error)
+        except ValidationError as error:
+            return error.messages, HTTPStatus.INTERNAL_SERVER_ERROR

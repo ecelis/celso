@@ -66,7 +66,7 @@ class Detect():
         return {'error': error, 'success': False}
 
     def encode(self, pictures, username):
-        """Enocde Base64 pictures to numpy array and save associated with username."""
+        """Encode Base64 pictures to numpy array and save associated with username."""
         error = None
         encodings = []
         for picture in pictures:
@@ -74,7 +74,6 @@ class Detect():
                 image_encodings = self.get_encodings(self.to_cv_image(picture))
                 duplicate = self.match_encodings(image_encodings)
                 if duplicate['success']:
-                    print('Dupe')
                     duplicate['success'] = False
                     return duplicate
                 encodings.append(image_encodings)

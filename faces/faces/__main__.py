@@ -40,44 +40,7 @@ def conflict(error):
 
 
 api.add_resource(Enroll, '/register')
-# api.add_resource(Match, '/match')
-
-# @app.route('/register', methods=['POST'])
-# def register():
-#     """Register new face encodings endpoint."""
-#     error = None
-#     if request.method == 'POST':
-#         json_data = request.get_json()
-#         picture = json_data['picture']
-#         username = json_data['username']
-#         detect = Detect()
-#         result = detect.encode(picture, username)
-#         if result['success']:
-#             data = result['data']
-#             if data.acknowledged:
-#                 _id = MongoJSONEncoder().encode(data.inserted_id)
-#                 return {'id': _id.replace('"', ''), 'username': username}
-#         error = 'Unable to register face, either it is already registered, non-human or database issue.'  # pylint: disable=line-too-long
-#         abort(HTTPStatus.CONFLICT.value,
-#               description=error)
-
-#     abort(HTTPStatus.METHOD_NOT_ALLOWED.value,
-#           description=HTTPStatus.METHOD_NOT_ALLOWED.description)
-
-@app.route('/match', methods=['POST'])
-def duplicate():
-    """Match a face against known sample encodings."""
-    if request.method == 'POST':
-        json_data = request.get_json()
-        detect = Detect()
-        result = detect.match(json_data['picture'])
-        error = result.get('error', None)
-        if not error:
-            return result
-        return error
-
-    abort(HTTPStatus.METHOD_NOT_ALLOWED.value,
-          description=HTTPStatus.METHOD_NOT_ALLOWED.description)
+api.add_resource(Match, '/match')
 
 if __name__ == '__main__':
     app.run()

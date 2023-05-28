@@ -38,6 +38,7 @@ UserSchema = Schema.from_dict({
 user_schema = UserSchema()
 
 class Enroll(Resource):
+    """Enroll faces for ID"""
     def post(self):
         """Register new face encodings endpoint."""
         post_parser = reqparse.RequestParser()
