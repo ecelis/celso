@@ -19,9 +19,9 @@ Celso FaceID by @ecelis
 from http import HTTPStatus
 from flask import abort
 from flask_restful import reqparse, Resource
+from marshmallow import ValidationError
 from faces.detect import Detect
 from faces.common.util import MongoJSONEncoder
-from marshmallow import Schema, fields, ValidationError, pre_load
 
 
 def must_not_be_blank(data):
@@ -40,9 +40,7 @@ user_schema = UserSchema()
 
 class Enroll(Resource):
     """Enroll faces for ID"""
-    def __init__(self):
-        super().__init__()
-    
+
     def post(self):
         """Register new face encodings endpoint."""
         post_parser = reqparse.RequestParser()

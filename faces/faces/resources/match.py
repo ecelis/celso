@@ -26,9 +26,7 @@ from faces.detect import Detect
 
 class Match(Resource):
     """Match faces against enrolled ones"""
-    def __init__(self):
-        super().__init__()
-    
+
     def post(self):
         """Identify faces and return match success or denied."""
         post_parser = reqparse.RequestParser()
