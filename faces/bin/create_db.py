@@ -19,10 +19,9 @@ MongoDB setup utility for Celso by @ecelis
 import os
 from pymongo import MongoClient, ASCENDING
 import pymongoarrow.monkey
+from faces.common.helpers import get_mongo_uri
 
-MONGO_URL = os.environ.get('MONGODB_URI', 'mongodb://localhost/')
-MONGO_DB = os.environ.get('MONGODB_DB', 'celso')
-mongo_uri = MONGO_URL + MONGO_DB + '?retryWrites=true&w=majority'
+mongo_uri = get_mongo_uri()
 pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
 db = client[os.environ.get('MONGODB_DB', 'celso')]
