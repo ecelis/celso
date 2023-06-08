@@ -22,8 +22,9 @@ from tests.conftest import db
 from faces.common.helpers import create_user_encodings
 
 
-USER_1 = 'anne'
-USER_2 = 'joe'
+USER_1 = 'Ann'
+USER_2 = 'Bob'
+USER_3 = 'Charly'
 MOCK = [
         [ 0.044832512736320496, 0.13082386553287506, 0.11568633466959],
         [0.027178555727005005, -0.0730728879570961, -0.01901322603225708]
@@ -31,7 +32,7 @@ MOCK = [
 
 class TestUserEncodings:
     """Test User Encodings functions"""
-    
+
     def test_create_user_encodings(self):
         """Test create_user_encodings(db)"""
         create_user_encodings(db)
@@ -66,3 +67,13 @@ class TestUserEncodings:
         result = user_encodings.find_all()
         assert result is not None
         assert len(list(result)) == 1
+    
+    def test_find_encodings_by_id(self):
+        """Test find encodings by id"""
+        user_encodings = UserEncodings(db)
+        encodings = np.ndarray(shape=(2,2),
+                               buffer=np.array(MOCK),
+                               dtype=float)
+        user = user_encodings.save_encodings(USER_2, encodings)
+        result = user_encodings.find_encodings_by_id(user.inserted_id)
+        assert USER_2 == result['username']
