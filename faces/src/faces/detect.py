@@ -24,7 +24,7 @@ import numpy as np
 from face_recognition import face_encodings, face_locations, compare_faces, face_distance
 from faces.common.helpers import find_all, save_encodings
 
-class Detect():
+class Detect:
     """Face detection library for Celso"""
     def __init__(self):
         super().__init__()
@@ -80,6 +80,7 @@ class Detect():
             except ValueError as ex:
                 error = ex
         try:
+            user_encodings = 
             result = save_encodings(username, encodings)
             return {'data': result, 'success': True}
         except Exception as ex:

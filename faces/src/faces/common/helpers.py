@@ -18,8 +18,10 @@ MongoDB helpers for Celso by @ecelis
 
 import os
 from bson import ObjectId
-from pymongo import MongoClient
+from enum import Enum
+from pymongo import MongoClient, ASCENDING
 import pymongoarrow.monkey
+
 
 MONGO_URL = os.environ.get('MONGODB_URI', 'mongodb://localhost/')
 MONGO_DB = os.environ.get('MONGODB_DB', 'celso')
@@ -28,9 +30,8 @@ pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
 db = client[MONGO_DB]
 
-collection = {
-    'USER_ENCODINGS': 'UserEncodings'
-}
+class Collection(Enum):
+    USER_ENCODINGS = 'UserEncodings'
 
 def get_db():
     """Return db instance."""
@@ -41,29 +42,12 @@ def get_connection():
     return client
 
 def get_mongo_uri():
+    """Return MongoDB URI"""
     return mongo_uri
 
-def save_encodings(username, encodings):
-    """"Persist to MongoDB a list representation of the face encodings."""
-    user_encodings = db.get_collection(collection['USER_ENCODINGS'])
-    # TODO Consider using bson instead
-    # https://stackoverflow.com/questions/12272642/serialize-deserialize-float-arrays-to-binary-file-using-bson-in-python
-    encodings_list = [encoding[0].tolist() for encoding in encodings]
-    document = {
-        'username': username,
-        'encodings': encodings_list
-    }
-    result = user_encodings.insert_one(document)
-    return result
+def create_user_encodings(_db):
+    """Create UserEncoding collection"""
+    _db.create_collection('UserEncodings')
+    user_encodings = _db.get_collection(Collection.USER_ENCODINGS.value)
+    user_encodings.create_index([('username', ASCENDING)], unique=True)
 
-def find_all():
-    """Fetch all known samples encodings"""
-    user_encodings = db.get_collection(collection['USER_ENCODINGS'])
-    result = user_encodings.find()
-    return result
-
-def find_encodings_by_id(_id):
-    """Find encodings by ID"""
-    user_encodings = db.get_collection(collection['USER_ENCODINGS'])
-    result = user_encodings.find_one({'_id': ObjectId(_id)})
-    return result

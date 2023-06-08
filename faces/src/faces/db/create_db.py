@@ -17,15 +17,13 @@ MongoDB setup utility for Celso by @ecelis
 """
 
 import os
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient
 import pymongoarrow.monkey
-from faces.common.helpers import get_mongo_uri
+from faces.common.helpers import create_user_encodings, get_mongo_uri
 
 mongo_uri = get_mongo_uri()
 pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
 db = client[os.environ.get('MONGODB_DB', 'celso')]
 
-db.create_collection('UserEncodings')
-user_encodings = db.get_collection('UserEncodings')
-user_encodings.create_index([('username', ASCENDING)], unique=True)
+create_user_encodings(db)
