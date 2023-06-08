@@ -67,7 +67,7 @@ class TestUserEncodings:
         result = user_encodings.find_all()
         assert result is not None
         assert len(list(result)) == 1
-    
+
     def test_find_encodings_by_id(self):
         """Test find encodings by id"""
         user_encodings = UserEncodings(db)
@@ -77,3 +77,15 @@ class TestUserEncodings:
         user = user_encodings.save_encodings(USER_2, encodings)
         result = user_encodings.find_encodings_by_id(user.inserted_id)
         assert USER_2 == result['username']
+
+    def test_find_encodings_by_nonexistent_id(self):
+        """Test find encodings by non-existent id"""
+        user_encodings = UserEncodings(db)
+        encodings = np.ndarray(shape=(2,2),
+                               buffer=np.array(MOCK),
+                               dtype=float)
+        _id = '6481503b0f7daef7da390056'
+        username = 'Dave'
+        user_encodings.save_encodings(username, encodings)
+        result = user_encodings.find_encodings_by_id(_id)
+        assert result is None
