@@ -22,9 +22,9 @@ from tests.conftest import db
 from faces.common.helpers import create_user_encodings
 
 
-user_1 = 'anne'
-user_2 = 'joe'
-mock = [
+USER_1 = 'anne'
+USER_2 = 'joe'
+MOCK = [
         [ 0.044832512736320496, 0.13082386553287506, 0.11568633466959],
         [0.027178555727005005, -0.0730728879570961, -0.01901322603225708]
         ]
@@ -39,23 +39,30 @@ class TestUserEncodings:
     def test_save_encodings(self):
         """Test save_encodings success"""
         encodings = np.ndarray(shape=(2,2),
-                               buffer=np.array(mock),
+                               buffer=np.array(MOCK),
                                dtype=float)
         user_encodings = UserEncodings(db)
-        result = user_encodings.save_encodings(user_1, encodings)
+        result = user_encodings.save_encodings(USER_1, encodings)
         assert result.acknowledged is True
 
     def test_save_encodings_dupe_user1(self):
         """Test save_encodings duplicated username"""
         encodings = np.ndarray(shape=(2,2),
-                               buffer=np.array(mock),
+                               buffer=np.array(MOCK),
                                dtype=float)
         user_encodings = UserEncodings(db)
-        result = user_encodings.save_encodings(user_1, encodings)
+        result = user_encodings.save_encodings(USER_1, encodings)
         assert result is None
 
     def test_save_encodings_invalid_nparray(self):
         """Test save_encodings invalid nparray data"""
         user_encodings = UserEncodings(db)
-        result = user_encodings.save_encodings(user_1, mock)
+        result = user_encodings.save_encodings(USER_1, MOCK)
         assert result is None
+
+    def test_find_all(self):
+        """Test find all encodings"""
+        user_encodings = UserEncodings(db)
+        result = user_encodings.find_all()
+        assert result is not None
+        assert len(list(result)) == 1
