@@ -22,7 +22,8 @@ from PIL import Image
 import cv2
 import numpy as np
 from face_recognition import face_encodings, face_locations, compare_faces, face_distance
-from faces.common.helpers import find_all, save_encodings
+from faces.common.helpers import get_db
+from faces.db.user_encodings import UserEncodings
 
 class Detect:
     """Face detection library for Celso"""
@@ -32,26 +33,35 @@ class Detect:
 
     def get_encodings(self, image):
         """Get faces from one image and return it encoded."""
-        locations = face_locations(image)
-        locations_len = len(locations)
-        if locations_len > 1:
-            raise ValueError('More than one face detected.')
-        if locations_len < 1:
-            raise ValueError("Couldn't detect any face.")
-        encodings = face_encodings(image, locations)
-        return encodings
+        try:
+            locations = face_locations(image)
+            locations_len = len(locations)
+            if locations_len > 1:
+                raise ValueError('More than one face detected.')
+            if locations_len < 1:
+                raise ValueError("Couldn't detect any face.")
+            encodings = face_encodings(image, locations)
+            return encodings
+        except TypeError as error:
+            print(error)
+            return None
 
     def to_cv_image(self, picture):
         """Trnasform Base64 encoded image to CV2 RGB image"""
-        image_data = b64decode(str(picture.split(',')[1]))
-        image = Image.open(BytesIO(image_data))
-        cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
-        return cv_image
+        try:
+            image_data = b64decode(str(picture.split(',')[1]))
+            image = Image.open(BytesIO(image_data))
+            cv_image = cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB)
+            return cv_image
+        except AttributeError as error:
+            print(error)
+            return None
 
     def match_encodings(self, candidate):
         """Pass a candidate image encoding and match against known in encodings in DB"""
         error = 'Not known.'
-        known = list(find_all())
+        user_encodings = UserEncodings(get_db)
+        known = list(user_encodings.find_all())
         if candidate:
             for face in known:
                 _id = str(face['_id'])
@@ -80,8 +90,8 @@ class Detect:
             except ValueError as ex:
                 error = ex
         try:
-            user_encodings = 
-            result = save_encodings(username, encodings)
+            user_encodings = UserEncodings(get_db)
+            result = user_encodings.save_encodings(username, encodings)
             return {'data': result, 'success': True}
         except Exception as ex:
             error = ex
