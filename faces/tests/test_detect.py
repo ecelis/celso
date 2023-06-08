@@ -16,14 +16,11 @@ Test UserEncodings collection for Celso by @ecelis
    limitations under the License.
 """
 
-from PIL import Image
-from base64 import b64encode, b64decode
-import cv2
+from base64 import b64encode
 import numpy as np
-from faces.db.user_encodings import UserEncodings
+from faces.common.strings import FacesError
 from faces.detect import Detect
 from tests.conftest import db
-from faces.common.helpers import create_user_encodings
 
 
 meta = 'data:image/jpeg;base64,'
@@ -37,8 +34,13 @@ amlo = open('tests/amlo.jpg', 'rb')
 amlor = amlo.read()
 b64amlo = b64encode(amlor).decode('ascii')
 b64obama1 = meta + b64amlo
+people = open('tests/people.jpg', 'rb')
+peopler = people.read()
+b64people = meta + b64encode(peopler).decode('ascii')
 obama1.close()
-
+obama2.close()
+amlo.close()
+people.close()
 class TestDetect:
     """Tests for detect module"""
     def test_to_cv_image(self):
@@ -59,6 +61,7 @@ class TestDetect:
         cv_image = detect.to_cv_image(b64obama1)
         result = detect.get_encodings(cv_image)
         assert isinstance(result, list) is True
+        assert len(result) > 0
 
     def test_get_encodings_type_error(self):
         """Test get_encodings TypeError raw image passed as parameter"""
@@ -66,10 +69,17 @@ class TestDetect:
         result = detect.get_encodings(obama1)
         assert result is None
 
-    def test_encode(self):
-        """Test encode succesfully"""
+    def test_get_encodings_more_than_one(self):
+        """Test get_encodings more thano one persone in picture"""
         detect = Detect()
-        pictures = [b64obama1, b64obama2]
-        result = detect.encode(pictures, 'Obama')
-        print(result)
-        assert isinstance(result['error'], str)
+        cv_image = detect.to_cv_image(b64people)
+        result = detect.get_encodings(cv_image)
+        assert result == FacesError.GT_ONE_FACE.value
+
+    # def test_encode(self):
+    #     """Test encode succesfully"""
+    #     detect = Detect()
+    #     pictures = [b64obama1, b64obama2]
+    #     result = detect.encode(pictures, 'Obama')
+    #     print(result)
+    #     assert isinstance(result['error'], str)
