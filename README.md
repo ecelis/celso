@@ -41,11 +41,33 @@ Setup environment
 source bin/setenv.sh
 ```
 
+### Faces
+
+#### Faces development
+
 ```bash
 cd faces
 conda activate celso
 python3 bin/create_db.py
 flask --debug run
+```
+
+#### Faces test
+
+##### Debug output
+
+```bash
+cd faces
+conda activate celso
+pytest --no-header -v -rpP
+```
+
+##### Quiet
+
+```bash
+cd faces
+conda activate celso
+pytest --no-header -ra
 ```
 
 ### WebUI

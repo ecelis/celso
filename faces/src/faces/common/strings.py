@@ -1,5 +1,5 @@
 """
-MongoDB setup utility for Celso by @ecelis
+Strings for for Celso by @ecelis
 
    Copyright 2023 Ernesto A. Celis de la Fuente
 
@@ -16,17 +16,11 @@ MongoDB setup utility for Celso by @ecelis
    limitations under the License.
 """
 
-import os
-from pymongo import MongoClient, ASCENDING
-import pymongoarrow.monkey
+from enum import Enum
 
-MONGO_URL = os.environ.get('MONGODB_URI', 'mongodb://localhost/')
-MONGO_DB = os.environ.get('MONGODB_DB', 'celso')
-mongo_uri = MONGO_URL + MONGO_DB + '?retryWrites=true&w=majority'
-pymongoarrow.monkey.patch_all()
-client = MongoClient(mongo_uri)
-db = client[os.environ.get('MONGODB_DB', 'celso')]
-
-db.create_collection('UserEncodings')
-user_encodings = db.get_collection('UserEncodings')
-user_encodings.create_index([('username', ASCENDING)], unique=True)
+class FacesError(Enum):
+    """Faces Error Strings"""
+    GT_ONE_FACE = 'More than one face detected.'
+    LT_ONE_FACE = "Couldn't detect any face."
+    VALUE_ERROR = 'Value error'
+    NO_MATCH = 'No matches'
