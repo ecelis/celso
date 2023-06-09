@@ -51,7 +51,7 @@ class Enroll(Resource):
         args = post_parser.parse_args()
         try:
             data = user_schema.load(args)
-            detect = Detect()
+            detect = Detect(None)
             result = detect.encode(data['picture'], data['username'])
             if result['success']:
                 encoded_data = result['data']
