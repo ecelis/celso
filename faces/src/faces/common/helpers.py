@@ -17,7 +17,6 @@ MongoDB helpers for Celso by @ecelis
 """
 
 import os
-from bson import ObjectId
 from enum import Enum
 from pymongo import MongoClient, ASCENDING
 import pymongoarrow.monkey
@@ -31,6 +30,7 @@ client = MongoClient(mongo_uri)
 db = client[MONGO_DB]
 
 class Collection(Enum):
+    """MongoDB Collections for celso"""
     USER_ENCODINGS = 'UserEncodings'
 
 def get_db():
@@ -50,4 +50,3 @@ def create_user_encodings(_db):
     _db.create_collection('UserEncodings')
     user_encodings = _db.get_collection(Collection.USER_ENCODINGS.value)
     user_encodings.create_index([('username', ASCENDING)], unique=True)
-

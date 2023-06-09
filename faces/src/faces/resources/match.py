@@ -36,7 +36,7 @@ class Match(Resource):
         print(args)
         try:
             # data = user_schema.load(args)  TODO can Schema be used in Login POST?
-            detect = Detect()
+            detect = Detect(None)
             result = detect.match(args['picture'][0])
             error = result.get('error', None)
             if not error:
