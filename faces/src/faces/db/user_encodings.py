@@ -19,15 +19,19 @@ UserEncodings DAO for Celso by @ecelis
 from bson import ObjectId
 from pymongo.errors import DuplicateKeyError
 from faces.common.helpers import Collection
+from faces.common.strings import FacesError
 
 class UserEncodings:
     """UserENcodings collection DAO"""
     def __init__(self, _db) -> None:
         self._db = _db
 
-    def save_encodings(self, username, encodings):
+    def save_encodings(self, username: str, encodings: list):
         """"Persist to MongoDB a list representation of the face encodings."""
+        error = None
         try:
+            if isinstance(encodings, list) is False:
+                raise AttributeError(FacesError.VALUE_ERROR.value)
             user_encodings = self._db.get_collection(Collection.USER_ENCODINGS.value)
             # TODO Consider using bson instead
             # https://stackoverflow.com/questions/12272642/serialize-deserialize-float-arrays-to-binary-file-using-bson-in-python
@@ -38,9 +42,9 @@ class UserEncodings:
             }
             result = user_encodings.insert_one(document)
             return result
-        except (DuplicateKeyError, AttributeError) as error:
-            print(error)
-            return None
+        except (DuplicateKeyError, AttributeError) as ex:
+            error = ex
+        return error
 
     def find_all(self):
         """Fetch all known samples encodings"""
@@ -48,7 +52,7 @@ class UserEncodings:
         result = user_encodings.find()
         return result
 
-    def find_encodings_by_id(self, _id):
+    def find_encodings_by_id(self, _id: str):
         """Find encodings by ID"""
         user_encodings = self._db.get_collection(Collection.USER_ENCODINGS.value)
         result = user_encodings.find_one({'_id': ObjectId(_id)})

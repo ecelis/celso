@@ -19,7 +19,7 @@ MongoDB setup utility for Celso by @ecelis
 import os
 from pymongo import MongoClient
 import pymongoarrow.monkey
-from faces.common.helpers import Collection
+from faces.common.helpers import Collection, create_user_encodings
 
 
 MONGO_DB = 'celso_test'
@@ -28,5 +28,6 @@ mongo_uri = MONGO_URL + MONGO_DB + '?retryWrites=true&w=majority'
 pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
 db = client[MONGO_DB]
-print(Collection.USER_ENCODINGS.value)
+
 db.drop_collection(Collection.USER_ENCODINGS.value)
+create_user_encodings(db)

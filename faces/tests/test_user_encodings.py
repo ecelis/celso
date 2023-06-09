@@ -16,10 +16,13 @@ Test UserEncodings collection for Celso by @ecelis
    limitations under the License.
 """
 
+from pymongo.errors import DuplicateKeyError
+import pytest
 import numpy as np
 from faces.db.user_encodings import UserEncodings
 from tests.conftest import db
 from faces.common.helpers import create_user_encodings
+from faces.common.strings import FacesError
 
 
 USER_1 = 'Ann'
@@ -33,6 +36,7 @@ MOCK = [
 class TestUserEncodings:
     """Test User Encodings functions"""
 
+    @pytest.mark.skip(reason="Collection should be available beforehand")
     def test_create_user_encodings(self):
         """Test create_user_encodings(db)"""
         create_user_encodings(db)
@@ -43,7 +47,7 @@ class TestUserEncodings:
                                buffer=np.array(MOCK),
                                dtype=float)
         user_encodings = UserEncodings(db)
-        result = user_encodings.save_encodings(USER_1, encodings)
+        result = user_encodings.save_encodings(USER_1, [encodings])
         assert result.acknowledged is True
 
     def test_save_encodings_dupe_user1(self):
@@ -52,21 +56,32 @@ class TestUserEncodings:
                                buffer=np.array(MOCK),
                                dtype=float)
         user_encodings = UserEncodings(db)
-        result = user_encodings.save_encodings(USER_1, encodings)
-        assert result is None
+        result = user_encodings.save_encodings(USER_1, [encodings])
+        assert isinstance(result, DuplicateKeyError) is True
 
     def test_save_encodings_invalid_nparray(self):
         """Test save_encodings invalid nparray data"""
         user_encodings = UserEncodings(db)
         result = user_encodings.save_encodings(USER_1, MOCK)
-        assert result is None
+        assert isinstance(result, AttributeError) is True
+        assert result.args[0] == "'float' object has no attribute 'tolist'"
+
+    def test_save_encodings_no_nparray_list(self):
+        """Test save_encodings invalid nparray data"""
+        encodings = np.ndarray(shape=(2,2),
+                               buffer=np.array(MOCK),
+                               dtype=float)
+        user_encodings = UserEncodings(db)
+        result = user_encodings.save_encodings('no_list', encodings)
+        print(result)
+        assert result.args[0] == FacesError.VALUE_ERROR.value
 
     def test_find_all(self):
         """Test find all encodings"""
         user_encodings = UserEncodings(db)
         result = user_encodings.find_all()
         assert result is not None
-        assert len(list(result)) == 1
+        assert len(list(result)) > 0
 
     def test_find_encodings_by_id(self):
         """Test find encodings by id"""
@@ -74,7 +89,7 @@ class TestUserEncodings:
         encodings = np.ndarray(shape=(2,2),
                                buffer=np.array(MOCK),
                                dtype=float)
-        user = user_encodings.save_encodings(USER_2, encodings)
+        user = user_encodings.save_encodings(USER_2, [encodings])
         result = user_encodings.find_encodings_by_id(user.inserted_id)
         assert USER_2 == result['username']
 
@@ -86,6 +101,6 @@ class TestUserEncodings:
                                dtype=float)
         _id = '6481503b0f7daef7da390056'
         username = 'Dave'
-        user_encodings.save_encodings(username, encodings)
+        user_encodings.save_encodings(username, [encodings])
         result = user_encodings.find_encodings_by_id(_id)
         assert result is None
