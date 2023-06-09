@@ -19,10 +19,10 @@ Test UserEncodings collection for Celso by @ecelis
 from pymongo.errors import DuplicateKeyError
 import pytest
 import numpy as np
-from faces.db.user_encodings import UserEncodings
 from tests.conftest import db
 from faces.common.helpers import create_user_encodings
 from faces.common.strings import FacesError
+from faces.db.user_encodings import UserEncodings
 
 
 USER_1 = 'Ann'
