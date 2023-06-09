@@ -83,42 +83,39 @@ class Detect:
                     return {'_id': _id, 'username': username, 'success': True}
         return {'error': error, 'success': False}
 
-    def encode(self, pictures, username):
+    def encode(self, pictures: list[str], username: str):
         """
         Encode Base64 pictures to numpy array and save associated with
         username.
         """
         error = None
-        encodings = []
-        for picture in pictures:
-            try:
+        try:
+            encodings = []
+            for picture in pictures:
                 image_encodings = self.get_encodings(
                     self.to_cv_image(picture))
                 duplicate = self.match_encodings(image_encodings)
                 if duplicate['success']:
-                    duplicate['success'] = False
-                    return duplicate
+                    raise ValueError(FacesError.DUPLICATE.value)
                 encodings.append(image_encodings)
-            except ValueError as ex:
-                error = ex
-                print(error)
-        try:
             user_encodings = UserEncodings(self._db)
             result = user_encodings.save_encodings(username, encodings)
             return {'data': result, 'success': True}
-        except Exception as ex:
+        except (ValueError) as ex:
             error = ex
-            print(error)
         return error
 
-    def match(self, picture):
-        """Match face with known encodings from data base."""
+    def match(self, picture: str, video: str = None):
+        """
+        Match face with known encodings from data base.
+        
+        video param is reserved for future use"""
         error = None
         try:
             image_encodings = self.get_encodings(self.to_cv_image(picture))
             result = self.match_encodings(image_encodings)
             return result
-        except ValueError as error:
-            print(error)
-            return {'error': error}
+        except ValueError as ex:
+            error = ex
+        return error
             

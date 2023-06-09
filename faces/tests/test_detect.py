@@ -28,6 +28,7 @@ from faces.detect import Detect
 META = 'data:image/jpeg;base64,'
 OBAMA_NAME = 'Barack Obama'
 AMLO_NAME = 'Andres M. Lopez O.'
+ZELE_NAME = 'Volodymyr Zelenskyy'
 OBAMA1 = open('tests/obama1.jpg', 'rb')
 OBAMA1R = OBAMA1.read()
 B64OBAMA1 = META + b64encode(OBAMA1R).decode('ascii')
@@ -40,6 +41,9 @@ B64OBAMA3 = META + b64encode(OBAMA2R).decode('ascii')
 AMLO = open('tests/amlo.jpg', 'rb')
 AMLOR = AMLO.read()
 B64AMLO = META +  b64encode(AMLOR).decode('ascii')
+ZELENSKYY = open('tests/zelensky.jpg', 'rb')
+ZELENSKYYR = ZELENSKYY.read()
+B64ZELENSKYY = META +  b64encode(ZELENSKYYR).decode('ascii')
 PEOPLE = open('tests/people.jpg', 'rb')
 PEOPLER = PEOPLE.read()
 B64PEOPLE = META + b64encode(PEOPLER).decode('ascii')
@@ -120,10 +124,36 @@ class TestDetect:
         assert result['success'] is False
         assert result['error'] == FacesError.NO_MATCH.value
 
-    @pytest.mark.xfail
     def test_encode(self):
         """Test encode faces"""
         detect = Detect(db)
-        result = detect.encode([B64OBAMA1, B64OBAMA2, B64OBAMA3],
-                               'Obama')
-        print(result)
+        result = detect.encode([B64ZELENSKYY],
+                               ZELE_NAME)
+        assert isinstance(result, dict) is True
+        assert result['success'] is True
+        assert result['data'].acknowledged is True
+
+    def test_encode_dupe(self):
+        """Test encode duplicated faces"""
+        detect = Detect(db)
+        result = detect.encode([B64OBAMA3, B64OBAMA2, B64OBAMA1],
+                               'Evil Twin')
+        assert isinstance(result, ValueError) is True
+        assert result.args[0] == FacesError.DUPLICATE.value
+
+    def test_match(self):
+        """Test match successfully"""
+        detect = Detect(db)
+        result = detect.match(B64ZELENSKYY)
+        assert isinstance(result, dict) is True
+        assert result['success'] is True
+        assert result['username'] == ZELE_NAME
+
+    def test_match_no_match(self):
+        """Test match successfully"""
+        detect = Detect(db)
+        result = detect.match(B64AMLO)
+        assert isinstance(result, dict) is True
+        assert result['success'] is False
+        assert result['error'] == FacesError.NO_MATCH.value
+
