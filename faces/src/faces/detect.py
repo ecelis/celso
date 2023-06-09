@@ -40,7 +40,6 @@ class Detect:
             locations = face_locations(image,
                 number_of_times_to_upsample=1,
                 model='hog')
-            print(locations)
             locations_len = len(locations)
             if locations_len > 1:
                 raise ValueError(FacesError.GT_ONE_FACE.value)
@@ -105,10 +104,10 @@ class Detect:
             error = ex
         return error
 
-    def match(self, picture: str, video: str = None):
+    def match(self, picture: str):
         """
         Match face with known encodings from data base.
-        
+
         video param is reserved for future use"""
         error = None
         try:
