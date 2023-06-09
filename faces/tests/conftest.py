@@ -19,18 +19,12 @@ MongoDB setup utility for Celso by @ecelis
 import os
 from pymongo import MongoClient
 import pymongoarrow.monkey
-<<<<<<< HEAD:faces/tests/conftest.py
 from faces.common.helpers import Collection, create_user_encodings
 
 
 MONGO_DB = 'celso_test'
 MONGO_URL = os.environ.get('MONGODB_URI', 'mongodb://localhost/')
 mongo_uri = MONGO_URL + MONGO_DB + '?retryWrites=true&w=majority'
-=======
-from faces.common.helpers import get_mongo_uri
-
-mongo_uri = get_mongo_uri()
->>>>>>> main:faces/bin/create_db.py
 pymongoarrow.monkey.patch_all()
 client = MongoClient(mongo_uri)
 db = client[MONGO_DB]
