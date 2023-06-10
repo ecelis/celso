@@ -21,6 +21,7 @@ from flask import abort
 from flask_restful import reqparse, Resource
 from marshmallow import ValidationError, Schema, fields
 from faces.detect import Detect
+from faces.common.helpers import get_db
 from faces.common.util import MongoJSONEncoder
 
 
@@ -49,10 +50,9 @@ class Enroll(Resource):
         post_parser.add_argument('picture', required=True, type=str,
                                  action='append', help='User face picture list')
         args = post_parser.parse_args()
-        print(args)
         try:
             data = user_schema.load(args)
-            detect = Detect(None)
+            detect = Detect(get_db())
             result = detect.encode(data['picture'], data['username'])
             if result['success']:
                 encoded_data = result['data']

@@ -73,6 +73,7 @@ def app():
     app = create_app()
     app.config.update({
         "TESTING": True,
+        "MONGO_DB": "celso_test"
     })
     # Other setup
     yield app

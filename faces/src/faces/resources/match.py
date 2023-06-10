@@ -33,7 +33,6 @@ class Match(Resource):
         post_parser.add_argument('picture', required=True, type=str,
                                  action='append', help='User face picture list')
         args = post_parser.parse_args()
-        print(args)
         try:
             # data = user_schema.load(args)  TODO can Schema be used in Login POST?
             detect = Detect(None)

@@ -38,7 +38,7 @@ class TestMatch:
                                        'picture': [B64OBAMA1, B64OBAMA2, B64OBAMA3],
                                        'username': 'EL buen Barack'
                                    })
-        print(new_response)
+        print(new_response.json)
         # response = client.post('/match',
         #                     json={
         #                         'picture': OBAMA64
