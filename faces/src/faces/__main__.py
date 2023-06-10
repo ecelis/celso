@@ -38,7 +38,7 @@ def conflict(error):
     return jsonify(error=str(error)), HTTPStatus.CONFLICT.value
 
 
-api.add_resource(Enroll, '/register')
+api.add_resource(Enroll, '/enroll')
 api.add_resource(Match, '/match')
 
 if __name__ == '__main__':

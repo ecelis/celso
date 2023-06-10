@@ -16,46 +16,23 @@ Test UserEncodings collection for Celso by @ecelis
    limitations under the License.
 """
 
-from base64 import b64encode
-import numpy as np
 import pytest
-from tests.conftest import db
+import numpy as np
+from tests.conftest import (db,
+    OBAMA_NAME,
+    ZELE_NAME,
+    OBAMA1,
+    B64OBAMA1,
+    B64OBAMA2,
+    B64OBAMA3,
+    B64AMLO,
+    B64ZELENSKYY,
+    B64PEOPLE,
+    B64NO_FACE)
 from faces.common.strings import FacesError
 from faces.db.user_encodings import UserEncodings
 from faces.detect import Detect
 
-
-META = 'data:image/jpeg;base64,'
-OBAMA_NAME = 'Barack Obama'
-AMLO_NAME = 'Andres M. Lopez O.'
-ZELE_NAME = 'Volodymyr Zelenskyy'
-with open('tests/obama1.jpg', 'rb') as OBAMA1:
-    OBAMA1R = OBAMA1.read()
-    B64OBAMA1 = META + b64encode(OBAMA1R).decode('ascii')
-with open('tests/obama2.jpg', 'rb') as OBAMA2:
-    OBAMA2R = OBAMA2.read()
-    B64OBAMA2 = META + b64encode(OBAMA2R).decode('ascii')
-with open('tests/obama3.jpg', 'rb') as OBAMA3:
-    OBAMA3R = OBAMA3.read()
-    B64OBAMA3 = META + b64encode(OBAMA3R).decode('ascii')
-with open('tests/amlo.jpg', 'rb') as AMLO:
-    AMLOR = AMLO.read()
-    B64AMLO = META +  b64encode(AMLOR).decode('ascii')
-with open('tests/zelensky.jpg', 'rb') as ZELENSKYY:
-    ZELENSKYYR = ZELENSKYY.read()
-    B64ZELENSKYY = META +  b64encode(ZELENSKYYR).decode('ascii')
-with open('tests/people.jpg', 'rb') as PEOPLE:
-    PEOPLER = PEOPLE.read()
-    B64PEOPLE = META + b64encode(PEOPLER).decode('ascii')
-with open('tests/none.jpg', 'rb') as NO_FACE:
-    NO_FACER = NO_FACE.read()
-    B64NO_FACE = META + b64encode(NO_FACER).decode('ascii')
-OBAMA1.close()
-OBAMA2.close()
-OBAMA3.close()
-AMLO.close()
-PEOPLE.close()
-NO_FACE.close()
 
 class TestDetect:
     """Tests for detect module"""
